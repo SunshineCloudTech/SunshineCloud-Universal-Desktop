@@ -423,12 +423,7 @@ RUN sudo apt-get update && sudo apt-get install -y temurin-* -y
 RUN sudo apt update && sudo apt install -y supervisor
 RUN sudo mkdir -p /var/run/supervisor
 RUN sudo mkdir -p /var/log/supervisor
-COPY config/supervisord.conf /etc/supervisor/supervisord.conf
-COPY config/mysql.conf /etc/supervisor/conf.d/mysql.conf
-COPY config/ollama.conf /etc/supervisor/conf.d/ollama.conf
-COPY config/redis-server.conf /etc/supervisor/conf.d/redis-server.conf
-COPY config/tigervnc-server.conf /etc/supervisor/conf.d/tigervnc-server.conf
-COPY config/noVNC.conf /etc/supervisor/conf.d/noVNC.conf
+ADD config/* /etc/supervisor/conf.d/
 COPY scripts/xstartup /home/matrix0523/.vnc/xstartup
 RUN sudo chown -R matrix0523:matrix0523 /home/matrix0523/.vnc && sudo chmod +x /home/matrix0523/.vnc
 ADD scripts/SunshineCloud-AutoStart.desktop /home/matrix0523/.config/autostart/SunshineCloud-AutoStart.desktop
