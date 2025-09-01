@@ -1,16 +1,32 @@
 name: Build Devcontainer Images
 on:
-#   push:
-#     branches:
-#       - main
+  push:
+    branches:
+      - main
   workflow_dispatch: # Allow manual triggering
 
 jobs:
-  build-rootfs:
+  build-devcontainer:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout repository
           uses: actions/checkout@v4
+
+        - name: "Optimize Disk Space"
+          uses: "hugoalh/disk-space-optimizer-ghaction@v0.8.0"
+          with:
+            operate_sudo: "True"
+            general_include: ".+"
+            docker_include: ".+"
+            docker_prune: "True"
+            docker_clean: "True"
+            apt_prune: "True"
+            apt_clean: "True"
+            homebrew_prune: "True"
+            homebrew_clean: "True"
+            npm_prune: "True"
+            npm_clean: "True"
+            os_swap: "True"
 
         - name: Set up QEMU
           uses: docker/setup-qemu-action@v3
@@ -25,7 +41,7 @@ jobs:
           uses: actions/setup-node@v4
           with:
             node-version: lts/*
-        - run: npm install -g @devcontainers/cli
+        - run: sudo npm install -g @devcontainers/cli
 
         - name: Login to Docker Hub
           uses: docker/login-action@v3
@@ -36,22 +52,23 @@ jobs:
 
         - name: Build Image
           run: |
-            export image-name=sunshinecloud-java-devcontainers
-            export image_version=latest
-            devcontainer build --workspace-folder . --image-name sunshinecloud007/$image-name:$image_version 
+            # export image-name=sunshinecloud-java-devcontainers
+            # export image_version=latest
+            devcontainer build --workspace-folder . --image-name sunshinecloud007/sunshinecloud-universal-desktop
+            df -h
 
-        - name: Merge Docker Image
-          run: |
-            export src_image_name=sunshinecloud007/$image-name:$image_version
-            export docker_tmp_name=temp1
-            docker create -it -P --name $docker_tmp_name $src_image_name
-            docker export $docker_tmp_name -o $docker_tmp_name.tar
-            docker rm $docker_tmp_name
-            docker rmi $src_image_name
-            docker import $docker_tmp_name.tar $src_image_name
-            rm $docker_tmp_name.tar
-            docker images $src_image_name
+        # - name: Merge Docker Image
+        #   run: |
+        #     export src_image_name=sunshinecloud007/sunshinecloud-universal-desktop
+        #     export docker_tmp_name=temp1
+        #     docker create -it -P --name $docker_tmp_name $src_image_name
+        #     docker export $docker_tmp_name -o $docker_tmp_name.tar
+        #     docker rm $docker_tmp_name
+        #     docker rmi $src_image_name
+        #     docker import $docker_tmp_name.tar $src_image_name
+        #     rm $docker_tmp_name.tar
+        #     docker images $src_image_name
 
-        - name: Push Docker Image
-          run: |
-            docker push sunshinecloud007/$image-name:$image_version
+        # - name: Push Docker Image
+        #   run: |
+        #     docker push sunshinecloud007/sunshinecloud-universal-desktop

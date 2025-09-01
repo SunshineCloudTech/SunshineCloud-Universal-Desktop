@@ -1,0 +1,3 @@
+FROM sunshinecloud007/SunshineCloud-Universal-Desktop:version1
+ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["sudo service supervisor start && sudo service dbus restart && sudo service xrdp start && bash"] 
