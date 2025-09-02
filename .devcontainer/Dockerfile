@@ -314,7 +314,8 @@ RUN sudo apt-get update && \
     sudo rm -rf /var/lib/apt/lists/*
 # Copy custom noVNC files and configure WebAudio support
 ADD system/novnc/ /SunshineCloud/noVNC/
-RUN sed -i "/import RFB/a \
+RUN sudo chown -R matrix0523:matrix0523 /SunshineCloud/noVNC && \
+    sudo sed -i "/import RFB/a \
         import '../webaudio.js'" \
     /SunshineCloud/noVNC/app/ui.js
 
