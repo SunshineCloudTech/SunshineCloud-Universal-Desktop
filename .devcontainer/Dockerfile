@@ -151,40 +151,40 @@ USER matrix0523
 
 # Download PulseAudio XRDP modules and clone repositories
 RUN echo "Fetching latest release information..." && \
-    RELEASE_INFO=$(curl -s https://api.github.com/repos/SunshineCloudTech/SunshineCloud-Universal-Utils/releases/latest) && \
+    RELEASE_INFO=$(sudo curl -s https://api.github.com/repos/SunshineCloudTech/SunshineCloud-Universal-Utils/releases/latest) && \
     if [ "$RELEASE_INFO" != "null" ] && echo "$RELEASE_INFO" | jq -e '.assets' > /dev/null 2>&1; then \
         echo "Found release assets, looking for pulseaudio utils..."; \
         LATEST_RELEASE_URL=$(echo "$RELEASE_INFO" | jq -r '.assets[] | select(.name | startswith("pulseaudio-xrdp-utils-") and endswith(".tar.gz")) | .browser_download_url' | head -1); \
         if [ -n "$LATEST_RELEASE_URL" ] && [ "$LATEST_RELEASE_URL" != "null" ]; then \
             echo "Downloading from: $LATEST_RELEASE_URL"; \
-            curl -L "$LATEST_RELEASE_URL" -o pulseaudio-xrdp-utils.tar.gz; \
+            sudo curl -L "$LATEST_RELEASE_URL" -o /tmp/pulseaudio-xrdp-utils.tar.gz; \
         else \
             echo "No matching release assets found, trying fallback downloads..."; \
-            curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/releases/download/main/pulseaudio-xrdp-utils-20250901_141607.tar.gz" -o pulseaudio-xrdp-utils.tar.gz || \
-            curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/archive/refs/heads/main.tar.gz" -o pulseaudio-xrdp-utils.tar.gz; \
+            sudo curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/releases/download/main/pulseaudio-xrdp-utils-20250901_141607.tar.gz" -o /tmp/pulseaudio-xrdp-utils.tar.gz || \
+            sudo curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/archive/refs/heads/main.tar.gz" -o /tmp/pulseaudio-xrdp-utils.tar.gz; \
         fi; \
     else \
         echo "API returned null or invalid response, trying direct download..."; \
-        curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/releases/download/main/pulseaudio-xrdp-utils-20250901_141607.tar.gz" -o pulseaudio-xrdp-utils.tar.gz || \
-        curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/archive/refs/heads/main.tar.gz" -o pulseaudio-xrdp-utils.tar.gz; \
+        sudo curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/releases/download/main/pulseaudio-xrdp-utils-20250901_141607.tar.gz" -o /tmp/pulseaudio-xrdp-utils.tar.gz || \
+        sudo curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/archive/refs/heads/main.tar.gz" -o /tmp/pulseaudio-xrdp-utils.tar.gz; \
     fi && \
     sudo mkdir -p /SunshineCloud/SunshineCloud-PulseAudio-Modules && \
-    if tar -tzf pulseaudio-xrdp-utils.tar.gz > /dev/null 2>&1; then \
+    if sudo tar -tzf /tmp/pulseaudio-xrdp-utils.tar.gz > /dev/null 2>&1; then \
         echo "Valid tar.gz file, extracting..."; \
-        tar -xzf pulseaudio-xrdp-utils.tar.gz; \
-        find . -name "module-xrdp-source.so" -exec sudo cp {} /SunshineCloud/SunshineCloud-PulseAudio-Modules \; && \
-        find . -name "module-xrdp-sink.so" -exec sudo cp {} /SunshineCloud/SunshineCloud-PulseAudio-Modules \; ; \
+        cd /tmp && sudo tar -xzf pulseaudio-xrdp-utils.tar.gz; \
+        sudo find /tmp -name "module-xrdp-source.so" -exec sudo cp {} /SunshineCloud/SunshineCloud-PulseAudio-Modules \; && \
+        sudo find /tmp -name "module-xrdp-sink.so" -exec sudo cp {} /SunshineCloud/SunshineCloud-PulseAudio-Modules \; ; \
     else \
         echo "Invalid tar.gz file, extraction failed"; \
     fi && \
-    rm -rf pulseaudio-xrdp-utils.tar.gz pulseaudio-modules/ SunshineCloud-Universal-Utils-main/ && \
+    sudo rm -rf /tmp/pulseaudio-xrdp-utils.tar.gz /tmp/pulseaudio-modules/ /tmp/SunshineCloud-Universal-Utils-main/ && \
     # Clone repositories with minimal depth
-    git clone --depth=1 https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils.git && \
-    git clone --depth=1 https://github.com/vinceliuice/WhiteSur-gtk-theme.git && \
-    git clone --depth=1 https://github.com/vinceliuice/WhiteSur-wallpapers.git && \
-    git clone --depth=1 https://github.com/vinceliuice/WhiteSur-icon-theme.git && \
-    git clone --depth=1 https://github.com/novnc/noVNC.git && \
-    git clone --depth=1 https://github.com/novnc/websockify.git /SunshineCloud/noVNC/utils/websockify
+    sudo git clone --depth=1 https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils.git && \
+    sudo git clone --depth=1 https://github.com/vinceliuice/WhiteSur-gtk-theme.git && \
+    sudo git clone --depth=1 https://github.com/vinceliuice/WhiteSur-wallpapers.git && \
+    sudo git clone --depth=1 https://github.com/vinceliuice/WhiteSur-icon-theme.git && \
+    sudo git clone --depth=1 https://github.com/novnc/noVNC.git && \
+    sudo git clone --depth=1 https://github.com/novnc/websockify.git /SunshineCloud/noVNC/utils/websockify
 
 USER root
 
