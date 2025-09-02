@@ -17,7 +17,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
     apt-get install -y --no-install-recommends \
         apt-utils bash-completion bc bzip2 curl dialog diffutils findutils \
         gnupg gnupg2 gpgsm hostname iproute2 iputils-ping keyutils less \
-        libcap2-bin libkrb5-3 libnss-mdns libnss-myhostname libvte-2.9-common \
+        libcap2-bin libkrb5-3 libnss-mdns libnss-myhostname libvte-2.9*-common \
         libvte-common locales lsof man-db manpages mtr ncurses-base \
         openssh-client passwd pigz pinentry-curses procps rsync sudo \
         tcpdump time traceroute tree tzdata unzip util-linux wget xauth \
@@ -33,7 +33,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         wget apt-transport-https jq supervisor pkgconf file \
         # Desktop environment packages
         ca-certificates crudini dbus dbus-x11 fcitx5 fcitx5-chinese-addons \
-        fcitx5-pinyin firefox fonts-arphic-ukai fonts-arphic-uming \
+        fcitx5-pinyin firefox* fonts-arphic-ukai fonts-arphic-uming \
         fonts-noto-cjk fonts-noto-cjk-extra fonts-wqy-microhei fonts-wqy-zenhei \
         libasound2-dev libatk1.0-0 libcairo-gobject2 libgconf-2-4 \
         libgdk-pixbuf2.0-0 libglib2.0-dev libglib2.0-0 libgtk-3-0 libgtk-3-dev \
