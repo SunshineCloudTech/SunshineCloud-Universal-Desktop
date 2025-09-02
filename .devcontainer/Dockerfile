@@ -189,24 +189,34 @@ WORKDIR /SunshineCloud/Downloads
 RUN sudo apt-get update && sudo apt-get install -y jq && \
     echo "Fetching latest release information..." && \
     RELEASE_INFO=$(sudo curl -s https://api.github.com/repos/SunshineCloudTech/SunshineCloud-Universal-Utils/releases/latest) && \
-    echo "Release info: $RELEASE_INFO" && \
     if [ "$RELEASE_INFO" != "null" ] && echo "$RELEASE_INFO" | jq -e '.assets' > /dev/null 2>&1; then \
-        LATEST_RELEASE_URL=$(echo "$RELEASE_INFO" | jq -r '.assets[] | select(.name | contains("pulseaudio-xrdp-utils-") and endswith(".tar.gz")) | .browser_download_url' | head -1); \
+        echo "Found release assets, looking for pulseaudio utils..."; \
+        LATEST_RELEASE_URL=$(echo "$RELEASE_INFO" | jq -r '.assets[] | select(.name | startswith("pulseaudio-xrdp-utils-") and endswith(".tar.gz")) | .browser_download_url' | head -1); \
         if [ -n "$LATEST_RELEASE_URL" ] && [ "$LATEST_RELEASE_URL" != "null" ]; then \
             echo "Downloading from: $LATEST_RELEASE_URL"; \
             sudo curl -L "$LATEST_RELEASE_URL" -o pulseaudio-xrdp-utils.tar.gz; \
         else \
-            echo "No release assets found, downloading from specific tag..."; \
-            sudo curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/releases/download/main/pulseaudio-xrdp-utils.tar.gz" -o pulseaudio-xrdp-utils.tar.gz || \
-            sudo curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/archive/refs/heads/main.tar.gz" -o pulseaudio-xrdp-utils.tar.gz; \
+            echo "No matching release assets found, trying fallback downloads..."; \
+            if ! sudo curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/releases/download/main/pulseaudio-xrdp-utils-20250901_141607.tar.gz" -o pulseaudio-xrdp-utils.tar.gz; then \
+                echo "Fallback 1 failed, trying alternative..."; \
+                sudo curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/archive/refs/heads/main.tar.gz" -o pulseaudio-xrdp-utils.tar.gz; \
+            fi; \
         fi; \
     else \
         echo "API returned null or invalid response, trying direct download..."; \
-        sudo curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/releases/download/main/pulseaudio-xrdp-utils.tar.gz" -o pulseaudio-xrdp-utils.tar.gz || \
-        sudo curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/archive/refs/heads/main.tar.gz" -o pulseaudio-xrdp-utils.tar.gz; \
+        if ! sudo curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/releases/download/main/pulseaudio-xrdp-utils-20250901_141607.tar.gz" -o pulseaudio-xrdp-utils.tar.gz; then \
+            echo "Direct download failed, trying source archive..."; \
+            sudo curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/archive/refs/heads/main.tar.gz" -o pulseaudio-xrdp-utils.tar.gz; \
+        fi; \
     fi && \
     sudo mkdir -p /SunshineCloud/SunshineCloud-PulseAudio-Modules && \
-    sudo tar -xzf pulseaudio-xrdp-utils.tar.gz && \
+    if sudo tar -tzf pulseaudio-xrdp-utils.tar.gz > /dev/null 2>&1; then \
+        echo "Valid tar.gz file, extracting..."; \
+        sudo tar -xzf pulseaudio-xrdp-utils.tar.gz; \
+    else \
+        echo "Invalid tar.gz file, extraction failed"; \
+        exit 1; \
+    fi && \
     sudo find . -name "module-xrdp-source.so" -exec cp {} /SunshineCloud/SunshineCloud-PulseAudio-Modules \; && \
     sudo find . -name "module-xrdp-sink.so" -exec cp {} /SunshineCloud/SunshineCloud-PulseAudio-Modules \; && \
     sudo rm -rf pulseaudio-xrdp-utils.tar.gz pulseaudio-modules/ SunshineCloud-Universal-Utils-main/
