@@ -69,6 +69,6 @@ jobs:
         #     rm $docker_tmp_name.tar
         #     docker images $src_image_name
 
-        # - name: Push Docker Image
-        #   run: |
-        #     docker push sunshinecloud007/sunshinecloud-universal-desktop
+        - name: Push Docker Image
+          run: |
+            docker push sunshinecloud007/sunshinecloud-universal-desktop
