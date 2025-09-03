@@ -43,7 +43,6 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         xautolock xfce4 xfce4-clipman-plugin xfce4-cpugraph-plugin \
         xfce4-netload-plugin xfce4-screenshooter xfce4-taskmanager \
         xfce4-terminal xfce4-xkb-plugin xfonts-intl-chinese xfonts-wqy \
-        libxml2-utils xorgxrdp xprintidle xrdp xterm \
         # Audio packages
         pavucontrol ucspi-tcp gstreamer1.0-plugins-good gstreamer1.0-pulseaudio \
         gstreamer1.0-tools python3-pip && \
@@ -69,16 +68,23 @@ RUN useradd -m "Administrator" -s /bin/bash && \
     usermod -a -G ollama matrix0523
 
 # Create directory structure in a single layer
-RUN mkdir -p /runner/Linux/{x86_64,ARM64,Power} \
+RUN mkdir -p /runner/Linux/x86_64 /runner/Linux/ARM64 /runner/Linux/Power \
         /runner/macOS/Intel/x86_64 \
         /runner/macOS/Silicon/M1/ARM64 \
         /app /SunshineCloud /lost+found \
-        /DATA/{AppData,Documents,Downloads,Gallery,Compressed,Desktop,Games,General,ISOS,Media,Others,Programs,Public,Templates,Tools,Torrents,Videos} \
-        /DATA/Media/{Movies,Music,TV_Shows} \
-        /SunshineCloud/{AppData,Documents,Downloads,Gallery,Compressed,Desktop,Games,General,ISOS,Media,Others,Programs,Public,Templates,Tools,Torrents,Videos} \
-        /SunshineCloud/Media/{Movies,Music,TV_Shows} \
-        /data/{appdata,documents,downloads,gallery,compressed,desktop,games,general,isos,media,others,programs,public,templates,tools,torrents,videos} \
-        /data/media/{movies,music,tv_shows} \
+        /DATA/AppData /DATA/Documents /DATA/Downloads /DATA/Gallery /DATA/Compressed \
+        /DATA/Desktop /DATA/Games /DATA/General /DATA/ISOS /DATA/Media /DATA/Others \
+        /DATA/Programs /DATA/Public /DATA/Templates /DATA/Tools /DATA/Torrents /DATA/Videos \
+        /DATA/Media/Movies /DATA/Media/Music /DATA/Media/TV_Shows \
+        /SunshineCloud/AppData /SunshineCloud/Documents /SunshineCloud/Downloads /SunshineCloud/Gallery \
+        /SunshineCloud/Compressed /SunshineCloud/Desktop /SunshineCloud/Games /SunshineCloud/General \
+        /SunshineCloud/ISOS /SunshineCloud/Media /SunshineCloud/Others /SunshineCloud/Programs \
+        /SunshineCloud/Public /SunshineCloud/Templates /SunshineCloud/Tools /SunshineCloud/Torrents \
+        /SunshineCloud/Videos /SunshineCloud/Media/Movies /SunshineCloud/Media/Music /SunshineCloud/Media/TV_Shows \
+        /data/appdata /data/documents /data/downloads /data/gallery /data/compressed \
+        /data/desktop /data/games /data/general /data/isos /data/media /data/others \
+        /data/programs /data/public /data/templates /data/tools /data/torrents /data/videos \
+        /data/media/movies /data/media/music /data/media/tv_shows \
         /etc/supervisor/conf.d \
         /var/run/supervisor \
         /var/log/supervisor \
@@ -101,7 +107,7 @@ RUN cd /runner/Linux/x86_64 && curl -Ls https://micro.mamba.pm/api/micromamba/li
     # Install filebrowser
     curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash && \
     # Clean up
-    find /tmp -name "*ollama*" -delete 2>/dev/null || true
+    find /tmp -name "*ollama-linux-amd64*" -delete 2>/dev/null || true
 
 # Configure repositories and install Java
 RUN curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null && \
@@ -178,13 +184,16 @@ RUN echo "Fetching latest release information..." && \
         echo "Invalid tar.gz file, extraction failed"; \
     fi && \
     sudo rm -rf /tmp/pulseaudio-xrdp-utils.tar.gz /tmp/pulseaudio-modules/ /tmp/SunshineCloud-Universal-Utils-main/ && \
+
+WORKDIR /SunshineCloud/
+USER matrix0523    
     # Clone repositories with minimal depth
-    sudo git clone --depth=1 https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils.git && \
-    sudo git clone --depth=1 https://github.com/vinceliuice/WhiteSur-gtk-theme.git && \
-    sudo git clone --depth=1 https://github.com/vinceliuice/WhiteSur-wallpapers.git && \
-    sudo git clone --depth=1 https://github.com/vinceliuice/WhiteSur-icon-theme.git && \
-    sudo git clone --depth=1 https://github.com/novnc/noVNC.git && \
-    sudo git clone --depth=1 https://github.com/novnc/websockify.git /SunshineCloud/noVNC/utils/websockify
+RUN sudo git clone --recursive https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils.git /SunshineCloud/SunshineCloud-Universal-Utils && \
+RUN sudo git clone --recursive https://github.com/vinceliuice/WhiteSur-gtk-theme.git /SunshineCloud/WhiteSur-gtk-theme && \
+RUN sudo git clone --recursive https://github.com/vinceliuice/WhiteSur-wallpapers.git /SunshineCloud/WhiteSur-wallpapers && \
+RUN sudo git clone --recursive https://github.com/vinceliuice/WhiteSur-icon-theme.git /SunshineCloud/WhiteSur-icon-theme && \
+RUN sudo git clone --recursive https://github.com/novnc/noVNC.git /SunshineCloud/noVNC && \
+RUN sudo git clone --recursive https://github.com/novnc/websockify.git /SunshineCloud/noVNC/utils/websockify
 
 USER root
 
@@ -502,7 +511,8 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # 清理临时文件
 RUN rm -rf /tmp/mysql-build
-
+USER matrix0523
+WORKDIR /home/matrix0523
 # 暴露 MySQL 端口
 EXPOSE 3306
 ENTRYPOINT ["/bin/bash", "-c"]
