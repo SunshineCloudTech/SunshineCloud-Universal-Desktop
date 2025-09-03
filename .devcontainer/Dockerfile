@@ -28,7 +28,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         g++-x86-64-linux-gnu progress debootstrap dbus-daemon sysvinit-utils \
         software-properties-common lsb-release ca-certificates locales-all \
         build-essential fonts-noto fonts-wqy-zenhei nano tasksel xrdp \
-        bash-completion libgl1 libglib2.0-0 ffmpeg \
+        bash-completion libgl1 libglib2.0-0 ffmpeg xfce* \
         # Additional packages for later use
         wget apt-transport-https jq supervisor pkgconf file \
         # Desktop environment packages
@@ -68,7 +68,7 @@ RUN useradd -m "Administrator" -s /bin/bash && \
     usermod -a -G ollama matrix0523
 
 # Create directory structure in a single layer
-RUN mkdir -p /runner/Linux/x86_64 /runner/Linux/ARM64 /runner/Linux/Power \
+RUN mkdir -vp /runner/Linux/x86_64 /runner/Linux/ARM64 /runner/Linux/Power \
         /runner/macOS/Intel/x86_64 \
         /runner/macOS/Silicon/M1/ARM64 \
         /app /SunshineCloud /lost+found \
@@ -120,7 +120,7 @@ RUN curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | tee /usr/share/k
     rm -rf /var/lib/apt/lists/*
 
 # Install Homebrew
-RUN mkdir -p /SunshineCloud/Homebrew/ && \
+RUN mkdir -vp /SunshineCloud/Homebrew/ && \
     git clone --depth=1 https://github.com/Homebrew/brew /SunshineCloud/Homebrew && \
     chown -R matrix0523:matrix0523 /SunshineCloud/Homebrew && \
     echo 'export PATH="/SunshineCloud/Homebrew/bin:$PATH"' >> /home/matrix0523/.bashrc
@@ -174,7 +174,7 @@ RUN echo "Fetching latest release information..." && \
         sudo curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/releases/download/main/pulseaudio-xrdp-utils-20250901_141607.tar.gz" -o /tmp/pulseaudio-xrdp-utils.tar.gz || \
         sudo curl -L "https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils/archive/refs/heads/main.tar.gz" -o /tmp/pulseaudio-xrdp-utils.tar.gz; \
     fi && \
-    sudo mkdir -p /SunshineCloud/SunshineCloud-PulseAudio-Modules && \
+    sudo mkdir -vp /SunshineCloud/SunshineCloud-PulseAudio-Modules && \
     if sudo tar -tzf /tmp/pulseaudio-xrdp-utils.tar.gz > /dev/null 2>&1; then \
         echo "Valid tar.gz file, extracting..."; \
         cd /tmp && sudo tar -xzf pulseaudio-xrdp-utils.tar.gz; \
@@ -189,11 +189,11 @@ WORKDIR /SunshineCloud/
 USER matrix0523    
     # Clone repositories with minimal depth
 RUN sudo git clone --recursive https://github.com/SunshineCloudTech/SunshineCloud-Universal-Utils.git /SunshineCloud/SunshineCloud-Universal-Utils && \
-RUN sudo git clone --recursive https://github.com/vinceliuice/WhiteSur-gtk-theme.git /SunshineCloud/WhiteSur-gtk-theme && \
-RUN sudo git clone --recursive https://github.com/vinceliuice/WhiteSur-wallpapers.git /SunshineCloud/WhiteSur-wallpapers && \
-RUN sudo git clone --recursive https://github.com/vinceliuice/WhiteSur-icon-theme.git /SunshineCloud/WhiteSur-icon-theme && \
-RUN sudo git clone --recursive https://github.com/novnc/noVNC.git /SunshineCloud/noVNC && \
-RUN sudo git clone --recursive https://github.com/novnc/websockify.git /SunshineCloud/noVNC/utils/websockify
+    sudo git clone --recursive https://github.com/vinceliuice/WhiteSur-gtk-theme.git /SunshineCloud/WhiteSur-gtk-theme && \
+    sudo git clone --recursive https://github.com/vinceliuice/WhiteSur-wallpapers.git /SunshineCloud/WhiteSur-wallpapers && \
+    sudo git clone --recursive https://github.com/vinceliuice/WhiteSur-icon-theme.git /SunshineCloud/WhiteSur-icon-theme && \
+    sudo git clone --recursive https://github.com/novnc/noVNC.git /SunshineCloud/noVNC && \
+    sudo git clone --recursive https://github.com/novnc/websockify.git /SunshineCloud/noVNC/utils/websockify
 
 USER root
 
@@ -215,24 +215,24 @@ ADD scripts/SunshineCloud-AutoStart.desktop /home/matrix0523/.config/autostart/S
 RUN chown -R matrix0523:matrix0523 /home/matrix0523/.vnc /home/matrix0523/.config /SunshineCloud && \
     chmod +x /home/matrix0523/.vnc/xstartup /usr/bin/start-pulseaudio.sh && \
     chmod 755 /home/matrix0523/.config /home/matrix0523/.vnc && \
-    # Configure PulseAudio daemon.conf
-    echo "# PulseAudio daemon configuration for XRDP" > /etc/pulse/daemon.conf && \
-    echo "default-sample-format = s16le" >> /etc/pulse/daemon.conf && \
-    echo "default-sample-rate = 44100" >> /etc/pulse/daemon.conf && \
-    echo "alternate-sample-rate = 48000" >> /etc/pulse/daemon.conf && \
-    echo "realtime-scheduling = yes" >> /etc/pulse/daemon.conf && \
-    echo "realtime-priority = 5" >> /etc/pulse/daemon.conf && \
-    echo "default-fragments = 4" >> /etc/pulse/daemon.conf && \
-    echo "default-fragment-size-msec = 25" >> /etc/pulse/daemon.conf && \
-    echo "flat-volumes = yes" >> /etc/pulse/daemon.conf && \
-    echo "system-instance = no" >> /etc/pulse/daemon.conf && \
-    echo "allow-module-loading = yes" >> /etc/pulse/daemon.conf && \
-    echo "log-level = info" >> /etc/pulse/daemon.conf && \
-    echo "exit-idle-time = 20" >> /etc/pulse/daemon.conf && \
-    echo "resample-method = speex-float-1" >> /etc/pulse/daemon.conf && \
-    echo "enable-deferred-volume = yes" >> /etc/pulse/daemon.conf && \
-    echo "avoid-resampling = no" >> /etc/pulse/daemon.conf && \
-    echo "default-server = unix:/tmp/pulseaudio.socket" >> /etc/pulse/daemon.conf && \
+    # Configure PulseAudio client.conf
+    echo "default-server=unix:/tmp/pulseaudio.socket" > /etc/pulse/client.conf && \
+    # Configure ALSA to use PulseAudio
+    echo "pcm.pulse {" > /etc/asound.conf && \
+    echo "    type pulse" >> /etc/asound.conf && \
+    echo "}" >> /etc/asound.conf && \
+    echo "" >> /etc/asound.conf && \
+    echo "ctl.pulse {" >> /etc/asound.conf && \
+    echo "    type pulse" >> /etc/asound.conf && \
+    echo "}" >> /etc/asound.conf && \
+    echo "" >> /etc/asound.conf && \
+    echo "pcm.!default {" >> /etc/asound.conf && \
+    echo "    type pulse" >> /etc/asound.conf && \
+    echo "}" >> /etc/asound.conf && \
+    echo "" >> /etc/asound.conf && \
+    echo "ctl.!default {" >> /etc/asound.conf && \
+    echo "    type pulse" >> /etc/asound.conf && \
+    echo "}" >> /etc/asound.conf && \
     # Configure PulseAudio default.pa
     echo "# PulseAudio configuration for XRDP" > /etc/pulse/default.pa && \
     echo ".nofail" >> /etc/pulse/default.pa && \
@@ -358,7 +358,7 @@ RUN groupadd -r -g ${MYSQL_GID} ${MYSQL_GROUP} && \
     -c "MySQL Server" ${MYSQL_USER}
 
 # 创建必要的目录结构
-RUN mkdir -p ${MYSQL_PREFIX} \
+RUN mkdir -vp ${MYSQL_PREFIX} \
              ${MYSQL_DATADIR} \
              ${MYSQL_LOGDIR} \
              ${MYSQL_RUNDIR} \
@@ -441,7 +441,7 @@ RUN echo "开始安装 MySQL..." && \
     echo "MySQL 安装完成"
 
 # 创建 MySQL 配置文件
-RUN mkdir -p /etc/mysql && \
+RUN mkdir -vp /etc/mysql && \
     echo '[mysqld]' > /etc/mysql/my.cnf && \
     echo '# 基本配置' >> /etc/mysql/my.cnf && \
     echo 'user = mysql' >> /etc/mysql/my.cnf && \

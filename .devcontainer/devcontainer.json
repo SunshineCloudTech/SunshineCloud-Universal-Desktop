@@ -171,8 +171,14 @@
         "./features/setup-user": "latest",       // 用户环境配置
         "./features/patch-python": {},           // Python 环境修补
         "./features/patch-conda": {},            // Conda 环境修补
-        "./features/jekyll": "latest"            // Jekyll 静态网站生成器
-
+        "./features/jekyll": "latest",            // Jekyll 静态网站生成器
+		"./features/micromamba": {
+			"allowReinstall": true,
+			"autoActivate": true,
+			"version": "latest",
+			"channels": "conda-forge",
+			"packages": "python>=3.10,<3.11 uv pip"
+		}
     },
     /*
      * 功能安装顺序控制
@@ -193,6 +199,7 @@
         "ghcr.io/devcontainers/features/python",           // Python 环境
         "./features/patch-python",                          // Python 环境修补
         "./features/machine-learning-packages",             // 机器学习包
+        "./features/micromamba",                           // Micromamba 包管理器
         "ghcr.io/devcontainers/features/php",              // PHP 环境
         "ghcr.io/devcontainers/features/ruby",             // Ruby 环境
         "ghcr.io/devcontainers/features/java",             // Java 环境
