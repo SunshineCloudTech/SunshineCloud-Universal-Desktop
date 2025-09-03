@@ -268,8 +268,8 @@ ENV MYSQL_DOWNLOAD_URL=https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-${MYS
 # MySQL 用户和组配置
 ENV MYSQL_USER=mysql
 ENV MYSQL_GROUP=mysql
-ENV MYSQL_UID=999
-ENV MYSQL_GID=999
+ENV MYSQL_UID=1999
+ENV MYSQL_GID=1999
 
 # MySQL 安装路径配置
 ENV MYSQL_PREFIX=/SunshineCloud/MySQL-Server
