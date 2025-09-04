@@ -28,7 +28,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         g++-x86-64-linux-gnu progress debootstrap dbus-daemon sysvinit-utils \
         software-properties-common lsb-release ca-certificates locales-all \
         build-essential fonts-noto fonts-wqy-zenhei nano tasksel xrdp \
-        bash-completion libgl1 libglib2.0-0 ffmpeg xfce* \
+        bash-completion libgl1 libglib2.0-0 ffmpeg \
         # Additional packages for later use
         wget apt-transport-https jq supervisor pkgconf file \
         # Desktop environment packages
@@ -40,7 +40,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         libnss3-dev libpangocairo-1.0-0 libselinux1-dev libxrandr2 libxss1 \
         libxtst6 openssh-server pulseaudio sassc tigervnc-standalone-server \
         tigervnc-viewer tigervnc-xorg-extension uuid-runtime vim vlc \
-        xautolock xfce4 xfce4-clipman-plugin xfce4-cpugraph-plugin \
+        xautolock xfce4* xfce4-clipman-plugin xfce4-cpugraph-plugin \
         xfce4-netload-plugin xfce4-screenshooter xfce4-taskmanager \
         xfce4-terminal xfce4-xkb-plugin xfonts-intl-chinese xfonts-wqy \
         # Audio packages
