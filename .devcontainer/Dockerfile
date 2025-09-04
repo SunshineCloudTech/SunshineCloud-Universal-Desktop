@@ -40,7 +40,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         libnss3-dev libpangocairo-1.0-0 libselinux1-dev libxrandr2 libxss1 \
         libxtst6 openssh-server pulseaudio sassc tigervnc-standalone-server \
         tigervnc-viewer tigervnc-xorg-extension uuid-runtime vim vlc \
-        xautolock xfce4* \
+        xautolock \
         # Audio packages
         pavucontrol ucspi-tcp gstreamer1.0-plugins-good gstreamer1.0-pulseaudio \
         gstreamer1.0-tools python3-pip && \
@@ -98,11 +98,11 @@ RUN cd /runner/Linux/x86_64 && curl -Ls https://micro.mamba.pm/api/micromamba/li
     cd /runner/macOS/Intel/x86_64 && curl -Ls https://micro.mamba.pm/api/micromamba/osx-64/latest | tar -xj && \
     cd /runner/macOS/Silicon/M1/ARM64 && curl -Ls https://micro.mamba.pm/api/micromamba/osx-arm64/latest | tar -xj && \
     # Install Ollama
-    curl -fsSL https://ollama.com/install.sh | sh && \
+    # curl -fsSL https://ollama.com/install.sh | sh && \
     # Install filebrowser
     curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash && \
     # Clean up
-    find /tmp -name "*ollama-linux-amd64*" -delete 2>/dev/null || true && \
+    # find /tmp -name "*ollama-linux-amd64*" -delete 2>/dev/null || true && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
