@@ -186,8 +186,8 @@ RUN echo "Fetching latest release information..." && \
         echo "Invalid tar.gz file, extraction failed"; \
     fi && \
     sudo rm -rf /tmp/pulseaudio-xrdp-utils.tar.gz /tmp/pulseaudio-modules/ /tmp/SunshineCloud-Universal-Utils-main/ && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    sudo apt-get clean && \
+    sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 WORKDIR /SunshineCloud/
 USER matrix0523    
