@@ -40,9 +40,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         libnss3-dev libpangocairo-1.0-0 libselinux1-dev libxrandr2 libxss1 \
         libxtst6 openssh-server pulseaudio sassc tigervnc-standalone-server \
         tigervnc-viewer tigervnc-xorg-extension uuid-runtime vim vlc \
-        xautolock xfce4* xfce4-clipman-plugin xfce4-cpugraph-plugin \
-        xfce4-netload-plugin xfce4-screenshooter xfce4-taskmanager \
-        xfce4-terminal xfce4-xkb-plugin xfonts-intl-chinese xfonts-wqy \
+        xautolock xfce4* \
         # Audio packages
         pavucontrol ucspi-tcp gstreamer1.0-plugins-good gstreamer1.0-pulseaudio \
         gstreamer1.0-tools python3-pip && \
@@ -100,10 +98,7 @@ RUN cd /runner/Linux/x86_64 && curl -Ls https://micro.mamba.pm/api/micromamba/li
     cd /runner/macOS/Intel/x86_64 && curl -Ls https://micro.mamba.pm/api/micromamba/osx-64/latest | tar -xj && \
     cd /runner/macOS/Silicon/M1/ARM64 && curl -Ls https://micro.mamba.pm/api/micromamba/osx-arm64/latest | tar -xj && \
     # Install Ollama
-    cd /tmp && \
-    curl -L https://ollama.com/download/ollama-linux-amd64.tgz -o ollama-linux-amd64.tgz && \
-    tar -C /usr -xzf ollama-linux-amd64.tgz && \
-    rm -rf ollama-linux-amd64.tgz && \
+    curl -fsSL https://ollama.com/install.sh | sh && \
     # Install filebrowser
     curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash && \
     # Clean up
