@@ -107,7 +107,9 @@ RUN cd /runner/Linux/x86_64 && curl -Ls https://micro.mamba.pm/api/micromamba/li
     # Install filebrowser
     curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash && \
     # Clean up
-    find /tmp -name "*ollama-linux-amd64*" -delete 2>/dev/null || true
+    find /tmp -name "*ollama-linux-amd64*" -delete 2>/dev/null || true && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Configure repositories and install Java
 RUN curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null && \
@@ -117,7 +119,9 @@ RUN curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | tee /usr/share/k
     apt-get update && \
     apt-get install -y --no-install-recommends cloudflared temurin-8-jdk temurin-11-jdk temurin-17-jdk temurin-21-jdk && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install Homebrew
 RUN mkdir -vp /SunshineCloud/Homebrew/ && \
@@ -148,8 +152,6 @@ RUN echo "███████╗██╗   ██╗███╗   ██╗�
     echo "    cat /etc/motd" >> /etc/bash.bashrc && \
     echo "  fi" >> /etc/bash.bashrc && \
     echo "fi" >> /etc/bash.bashrc && \
-    echo "#!/bin/bash" > /etc/update-motd.d/10-uname && \
-    echo "bash -c fastfetch" >> /etc/update-motd.d/10-uname && \
     chmod +x /etc/update-motd.d/10-uname
 
 WORKDIR /SunshineCloud/
@@ -183,7 +185,9 @@ RUN echo "Fetching latest release information..." && \
     else \
         echo "Invalid tar.gz file, extraction failed"; \
     fi && \
-    sudo rm -rf /tmp/pulseaudio-xrdp-utils.tar.gz /tmp/pulseaudio-modules/ /tmp/SunshineCloud-Universal-Utils-main/
+    sudo rm -rf /tmp/pulseaudio-xrdp-utils.tar.gz /tmp/pulseaudio-modules/ /tmp/SunshineCloud-Universal-Utils-main/ && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 WORKDIR /SunshineCloud/
 USER matrix0523    
@@ -387,10 +391,9 @@ RUN echo "正在下载 Boost 库..." && \
     mkdir boost && cd boost && \
     wget -O boost_1_77_0.tar.gz https://sourceforge.net/projects/boost/files/boost/1.77.0/boost_1_77_0.tar.gz/download && \
     tar -xzf boost_1_77_0.tar.gz && \
-    echo "Boost 库下载完成"
-
+    echo "Boost 库下载完成" && \
 # 配置编译选项
-RUN echo "开始配置 MySQL 编译选项..." && \
+    echo "开始配置 MySQL 编译选项..." && \
     cmake . \
     # 基本安装路径配置
     -DCMAKE_INSTALL_PREFIX=${MYSQL_PREFIX} \
@@ -428,17 +431,18 @@ RUN echo "开始配置 MySQL 编译选项..." && \
     # 构建类型
     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
     -DFORCE_INSOURCE_BUILD=${CMAKE_FORCE_INSOURCE_BUILD} && \
-    echo "MySQL 配置完成"
-
+    echo "MySQL 配置完成" && \
 # 编译 MySQL（使用多核编译加速）
-RUN echo "开始编译 MySQL，这可能需要较长时间..." && \
+    echo "开始编译 MySQL，这可能需要较长时间..." && \
     make -j$(nproc) && \
-    echo "MySQL 编译完成"
-
+    echo "MySQL 编译完成" && \
 # 安装 MySQL
-RUN echo "开始安装 MySQL..." && \
+    echo "开始安装 MySQL..." && \
     make install && \
-    echo "MySQL 安装完成"
+    echo "MySQL 安装完成" && \
+    rm -rf /tmp/mysql-build && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
 
 # 创建 MySQL 配置文件
 RUN mkdir -vp /etc/mysql && \
@@ -510,7 +514,6 @@ RUN echo '#!/bin/bash' > /usr/local/bin/docker-entrypoint.sh && \
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # 清理临时文件
-RUN rm -rf /tmp/mysql-build
 USER matrix0523
 WORKDIR /home/matrix0523
 # 暴露 MySQL 端口
