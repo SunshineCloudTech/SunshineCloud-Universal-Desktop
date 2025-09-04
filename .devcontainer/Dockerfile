@@ -392,6 +392,7 @@ RUN echo "正在下载 Boost 库..." && \
     wget -O boost_1_77_0.tar.gz https://sourceforge.net/projects/boost/files/boost/1.77.0/boost_1_77_0.tar.gz/download && \
     tar -xzf boost_1_77_0.tar.gz && \
     echo "Boost 库下载完成" && \
+    cd .. && \
 # 配置编译选项
     echo "开始配置 MySQL 编译选项..." && \
     cmake . \
