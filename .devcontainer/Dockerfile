@@ -59,7 +59,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         xautolock xfc* xinit xorgxrdp dbus-x11 \
         # Audio packages
         pavucontrol ucspi-tcp gstreamer1.0-plugins-good gstreamer1.0-pulseaudio \
-        gstreamer1.0-tools python3-pip \
+        gstreamer1.0-tools python3-pip x11-common \
         # Flatpak packages
         flatpak* xdg-desktop-portal-gtk && \
     # Clean up in the same layer
