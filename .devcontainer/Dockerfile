@@ -10,6 +10,10 @@ ENV MAMBA_ROOT_PREFIX="/opt/micromamba"
 ENV PATH="/SunshineCloud/Homebrew/bin:${PATH}"
 ENV HOMEBREW_PREFIX=/SunshineCloud/Homebrew
 ENV HOMEBREW_CACHE=/SunshineCloud/Homebrew/cache
+# Flatpak environment variables
+ENV XDG_DATA_DIRS="/usr/local/share:/usr/share:/var/lib/flatpak/exports/share:/home/matrix0523/.local/share/flatpak/exports/share"
+ENV FLATPAK_SYSTEM_DIR="/var/lib/flatpak"
+ENV FLATPAK_USER_DIR="/home/matrix0523/.local/share/flatpak"
 
 # Install all packages in a single layer to reduce image size
 RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAGE_LIST} && \
@@ -28,6 +32,18 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         g++-x86-64-linux-gnu progress debootstrap dbus-daemon sysvinit-utils \
         software-properties-common lsb-release ca-certificates locales-all \
         build-essential fonts-noto fonts-wqy-zenhei nano tasksel xrdp \
+        # 扩展字体支持 - Unicode和多语言字体
+        fonts-noto-core fonts-noto-ui-core fonts-noto-unhinted \
+        fonts-noto-color-emoji fonts-noto-cjk fonts-noto-cjk-extra \
+        fonts-liberation fonts-liberation2 fonts-dejavu fonts-dejavu-extra \
+        fonts-droid-fallback fonts-ubuntu fonts-opensymbol \
+        fonts-symbola fonts-unifont fonts-ancient-scripts \
+        fonts-arphic-ukai fonts-arphic-uming fonts-wqy-microhei fonts-wqy-zenhei \
+        fonts-ipafont fonts-ipafont-gothic fonts-ipafont-mincho \
+        fonts-takao fonts-vlgothic fonts-hanazono \
+        fonts-thai-tlwg fonts-khmeros fonts-lao fonts-sil-padauk \
+        fonts-tibetan-machine fonts-indic fonts-guru fonts-guru-extra \
+        fonts-gargi fonts-samyak fonts-firacode \
         bash-completion libgl1 libglib2.0-0 ffmpeg \
         # Additional packages for later use
         wget apt-transport-https jq supervisor pkgconf file \
@@ -38,15 +54,63 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         libasound2-dev libatk1.0-0 libcairo-gobject2 libgconf-2-4 \
         libgdk-pixbuf2.0-0 libglib2.0-dev libglib2.0-0 libgtk-3-0 libgtk-3-dev \
         libnss3-dev libpangocairo-1.0-0 libselinux1-dev libxrandr2 libxss1 \
-        libxtst6 openssh-server pulseaudio sassc tigervnc-standalone-server \
+        libxtst6 openssh-server pulseaudio sassc tigervnc- standalone-server \
         tigervnc-viewer tigervnc-xorg-extension uuid-runtime vim vlc \
-        xautolock xfc* \
+        xautolock xfc* xinit xorgxrdp dbus-x11 \
         # Audio packages
         pavucontrol ucspi-tcp gstreamer1.0-plugins-good gstreamer1.0-pulseaudio \
-        gstreamer1.0-tools python3-pip && \
+        gstreamer1.0-tools python3-pip \
+        # Flatpak packages
+        flatpak xdg-desktop-portal-gtk && \
     # Clean up in the same layer
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Configure fonts and locales
+RUN echo "配置字体和区域设置..." && \
+    # 更新字体缓存
+    fc-cache -fv && \
+    # 生成所有区域设置
+    locale-gen && \
+    # 设置默认字体配置
+    echo '<?xml version="1.0"?>' > /etc/fonts/local.conf && \
+    echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">' >> /etc/fonts/local.conf && \
+    echo '<fontconfig>' >> /etc/fonts/local.conf && \
+    echo '  <!-- 设置默认字体 -->' >> /etc/fonts/local.conf && \
+    echo '  <alias>' >> /etc/fonts/local.conf && \
+    echo '    <family>serif</family>' >> /etc/fonts/local.conf && \
+    echo '    <prefer>' >> /etc/fonts/local.conf && \
+    echo '      <family>Noto Serif</family>' >> /etc/fonts/local.conf && \
+    echo '      <family>Liberation Serif</family>' >> /etc/fonts/local.conf && \
+    echo '      <family>Noto Serif CJK SC</family>' >> /etc/fonts/local.conf && \
+    echo '    </prefer>' >> /etc/fonts/local.conf && \
+    echo '  </alias>' >> /etc/fonts/local.conf && \
+    echo '  <alias>' >> /etc/fonts/local.conf && \
+    echo '    <family>sans-serif</family>' >> /etc/fonts/local.conf && \
+    echo '    <prefer>' >> /etc/fonts/local.conf && \
+    echo '      <family>Noto Sans</family>' >> /etc/fonts/local.conf && \
+    echo '      <family>Liberation Sans</family>' >> /etc/fonts/local.conf && \
+    echo '      <family>Noto Sans CJK SC</family>' >> /etc/fonts/local.conf && \
+    echo '    </prefer>' >> /etc/fonts/local.conf && \
+    echo '  </alias>' >> /etc/fonts/local.conf && \
+    echo '  <alias>' >> /etc/fonts/local.conf && \
+    echo '    <family>monospace</family>' >> /etc/fonts/local.conf && \
+    echo '    <prefer>' >> /etc/fonts/local.conf && \
+    echo '      <family>Fira Code</family>' >> /etc/fonts/local.conf && \
+    echo '      <family>Source Code Pro</family>' >> /etc/fonts/local.conf && \
+    echo '      <family>Liberation Mono</family>' >> /etc/fonts/local.conf && \
+    echo '      <family>Noto Sans Mono CJK SC</family>' >> /etc/fonts/local.conf && \
+    echo '    </prefer>' >> /etc/fonts/local.conf && \
+    echo '  </alias>' >> /etc/fonts/local.conf && \
+    echo '  <!-- Unicode字符回退字体 -->' >> /etc/fonts/local.conf && \
+    echo '  <alias>' >> /etc/fonts/local.conf && \
+    echo '    <family>Noto Color Emoji</family>' >> /etc/fonts/local.conf && \
+    echo '    <default><family>emoji</family></default>' >> /etc/fonts/local.conf && \
+    echo '  </alias>' >> /etc/fonts/local.conf && \
+    echo '</fontconfig>' >> /etc/fonts/local.conf && \
+    # 再次更新字体缓存
+    fc-cache -fv && \
+    echo "字体配置完成"
 
 # Create users and configure sudo
 RUN useradd -m "Administrator" -s /bin/bash && \
@@ -64,6 +128,44 @@ RUN useradd -m "Administrator" -s /bin/bash && \
     usermod -a -G ollama root && \
     usermod -a -G ollama Administrator && \
     usermod -a -G ollama matrix0523
+
+# Create standard user directories for all users
+RUN mkdir -vp /home/Administrator/Desktop /home/Administrator/Documents /home/Administrator/Downloads \
+             /home/Administrator/Music /home/Administrator/Pictures /home/Administrator/Public \
+             /home/Administrator/Templates /home/Administrator/thinclient_drives /home/Administrator/Videos && \
+    mkdir -vp /home/matrix0523/Desktop /home/matrix0523/Documents /home/matrix0523/Downloads \
+             /home/matrix0523/Music /home/matrix0523/Pictures /home/matrix0523/Public \
+             /home/matrix0523/Templates /home/matrix0523/thinclient_drives /home/matrix0523/Videos && \
+    # Set ownership for Administrator directories
+    chown -R Administrator:Administrator /home/Administrator/Desktop /home/Administrator/Documents \
+                                        /home/Administrator/Downloads /home/Administrator/Music \
+                                        /home/Administrator/Pictures /home/Administrator/Public \
+                                        /home/Administrator/Templates /home/Administrator/thinclient_drives \
+                                        /home/Administrator/Videos && \
+    # Set ownership for matrix0523 directories
+    chown -R matrix0523:matrix0523 /home/matrix0523/Desktop /home/matrix0523/Documents \
+                                   /home/matrix0523/Downloads /home/matrix0523/Music \
+                                   /home/matrix0523/Pictures /home/matrix0523/Public \
+                                   /home/matrix0523/Templates /home/matrix0523/thinclient_drives \
+                                   /home/matrix0523/Videos && \
+    # Set appropriate permissions
+    chmod 755 /home/Administrator/Desktop /home/Administrator/Documents /home/Administrator/Downloads \
+              /home/Administrator/Music /home/Administrator/Pictures /home/Administrator/Public \
+              /home/Administrator/Templates /home/Administrator/thinclient_drives /home/Administrator/Videos && \
+    chmod 755 /home/matrix0523/Desktop /home/matrix0523/Documents /home/matrix0523/Downloads \
+              /home/matrix0523/Music /home/matrix0523/Pictures /home/matrix0523/Public \
+              /home/matrix0523/Templates /home/matrix0523/thinclient_drives /home/matrix0523/Videos
+
+# Configure Flatpak system
+RUN mkdir -p /var/lib/flatpak && \
+    mkdir -p /home/matrix0523/.local/share/flatpak && \
+    chown -R matrix0523:matrix0523 /home/matrix0523/.local && \
+    # Initialize Flatpak system repository
+    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo && \
+    # Set proper permissions for Flatpak
+    chmod 755 /var/lib/flatpak && \
+    # Allow matrix0523 user to use Flatpak system operations
+    echo 'matrix0523 ALL=(ALL) NOPASSWD: /usr/bin/flatpak' >> /etc/sudoers.d/matrix0523-flatpak
 
 # Create directory structure in a single layer
 RUN mkdir -vp /runner/Linux/x86_64 /runner/Linux/ARM64 /runner/Linux/Power \
@@ -123,6 +225,32 @@ RUN mkdir -vp /SunshineCloud/Homebrew/ && \
     git clone --depth=1 https://github.com/Homebrew/brew /SunshineCloud/Homebrew && \
     chown -R matrix0523:matrix0523 /SunshineCloud/Homebrew && \
     echo 'export PATH="/SunshineCloud/Homebrew/bin:$PATH"' >> /home/matrix0523/.bashrc
+
+# Configure Flatpak for matrix0523 user
+USER matrix0523
+RUN mkdir -p /home/matrix0523/.local/share/flatpak && \
+    # Add user Flatpak repository
+    flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo && \
+    # Configure XDG environment for current session
+    echo 'export XDG_DATA_DIRS="/usr/local/share:/usr/share:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:$XDG_DATA_DIRS"' >> /home/matrix0523/.bashrc && \
+    echo 'export PATH="$HOME/.local/share/flatpak/exports/bin:$PATH"' >> /home/matrix0523/.bashrc
+
+# Configure fonts for matrix0523 user
+RUN mkdir -p /home/matrix0523/.config/fontconfig && \
+    echo '<?xml version="1.0"?>' > /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '<fontconfig>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '  <!-- 用户字体偏好设置 -->' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '  <match target="pattern">' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '    <test qual="any" name="family"><string>serif</string></test>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '    <edit name="family" mode="prepend" binding="strong">' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '      <string>Noto Serif</string>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '    </edit>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '  </match>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '</fontconfig>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    chown -R matrix0523:matrix0523 /home/matrix0523/.config
+
+USER root
 
 # Install fastfetch as matrix0523 user
 USER matrix0523
@@ -209,13 +337,30 @@ ADD system/autostart /home/matrix0523/.config/autostart/
 ADD config/* /etc/supervisor/conf.d/
 COPY scripts/xstartup /home/matrix0523/.vnc/xstartup
 ADD scripts/SunshineCloud-AutoStart.desktop /home/matrix0523/.config/autostart/SunshineCloud-AutoStart.desktop
-
+# 允许xrdp使用xfce4桌面
+RUN echo "xfce4-session" > /home/matrix0523/.xsession && \
+    chown matrix0523:matrix0523 /home/matrix0523/.xsession
+RUN mkdir /var/run/dbus && \
+    cp /etc/X11/xrdp/xorg.conf /etc/X11 && \
+    sed -i "s/console/anybody/g" /etc/X11/Xwrapper.config && \
+    sed -i "s/xrdp\/xorg/xorg/g" /etc/xrdp/sesman.ini && \
+    locale-gen en_US.UTF-8 && \
+    echo "xfce4-session" > /etc/skel/.Xclients
+# 配置xrdp
+RUN sed -i.bak '/^test -x \/etc\/X11\/Xsession/ s/^/#/' /etc/xrdp/startwm.sh && \
+    echo "startxfce4" >> /etc/xrdp/startwm.sh
 # Set final permissions and configure PulseAudio
 RUN chown -R matrix0523:matrix0523 /home/matrix0523/.vnc /home/matrix0523/.config /SunshineCloud && \
     chmod +x /home/matrix0523/.vnc/xstartup /usr/bin/start-pulseaudio.sh && \
     chmod 755 /home/matrix0523/.config /home/matrix0523/.vnc && \
-    # Configure PulseAudio client.conf
-    echo "default-server=unix:/tmp/pulseaudio.socket" > /etc/pulse/client.conf && \
+    # Configure PulseAudio client.conf (修复冲突配置)
+    echo "# PulseAudio client configuration for SunshineCloud" > /etc/pulse/client.conf && \
+    echo "# Disable autospawn to prevent conflicts" >> /etc/pulse/client.conf && \
+    echo "autospawn = no" >> /etc/pulse/client.conf && \
+    echo "# Use dedicated pulse server socket" >> /etc/pulse/client.conf && \
+    echo "default-server = unix:/tmp/pulse-server" >> /etc/pulse/client.conf && \
+    echo "# Enable memory file descriptor for better performance" >> /etc/pulse/client.conf && \
+    echo "enable-memfd = yes" >> /etc/pulse/client.conf && \
     # Configure ALSA to use PulseAudio
     echo "pcm.pulse {" > /etc/asound.conf && \
     echo "    type pulse" >> /etc/asound.conf && \
@@ -233,32 +378,37 @@ RUN chown -R matrix0523:matrix0523 /home/matrix0523/.vnc /home/matrix0523/.confi
     echo "    type pulse" >> /etc/asound.conf && \
     echo "}" >> /etc/asound.conf && \
     # Configure PulseAudio default.pa
-    echo "# PulseAudio configuration for XRDP" > /etc/pulse/default.pa && \
-    echo ".nofail" >> /etc/pulse/default.pa && \
-    echo "load-module module-augment-properties" >> /etc/pulse/default.pa && \
-    echo "load-module module-always-sink" >> /etc/pulse/default.pa && \
-    echo ".ifexists module-xrdp-sink.so" >> /etc/pulse/default.pa && \
-    echo "load-module module-xrdp-sink" >> /etc/pulse/default.pa && \
-    echo ".endif" >> /etc/pulse/default.pa && \
-    echo ".ifexists module-xrdp-source.so" >> /etc/pulse/default.pa && \
-    echo "load-module module-xrdp-source" >> /etc/pulse/default.pa && \
-    echo ".endif" >> /etc/pulse/default.pa && \
-    echo ".ifexists /SunshineCloud/SunshineCloud-PulseAudio-Modules/module-xrdp-sink.so" >> /etc/pulse/default.pa && \
-    echo "load-module /SunshineCloud/SunshineCloud-PulseAudio-Modules/module-xrdp-sink.so" >> /etc/pulse/default.pa && \
-    echo ".endif" >> /etc/pulse/default.pa && \
-    echo ".ifexists /SunshineCloud/SunshineCloud-PulseAudio-Modules/module-xrdp-source.so" >> /etc/pulse/default.pa && \
-    echo "load-module /SunshineCloud/SunshineCloud-PulseAudio-Modules/module-xrdp-source.so" >> /etc/pulse/default.pa && \
-    echo ".endif" >> /etc/pulse/default.pa && \
-    echo "load-module module-native-protocol-unix" >> /etc/pulse/default.pa && \
-    echo "load-module module-device-restore" >> /etc/pulse/default.pa && \
-    echo "load-module module-stream-restore" >> /etc/pulse/default.pa && \
-    echo "load-module module-card-restore" >> /etc/pulse/default.pa && \
-    echo "load-module module-default-device-restore" >> /etc/pulse/default.pa && \
-    echo "load-module module-position-event-sounds" >> /etc/pulse/default.pa && \
-    echo "load-module module-role-cork" >> /etc/pulse/default.pa && \
-    echo "load-module module-filter-heuristics" >> /etc/pulse/default.pa && \
-    echo "load-module module-native-protocol-unix socket=/tmp/pulseaudio.socket auth-anonymous=1" >> /etc/pulse/default.pa && \
-    echo "load-module module-filter-apply" >> /etc/pulse/default.pa && \
+    echo "# PulseAudio configuration for XRDP" > /etc/xrdp/pulse/default.pa && \
+    echo ".nofail" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-augment-properties" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-always-sink" >> /etc/xrdp/pulse/default.pa && \
+    echo ".ifexists module-xrdp-sink.so" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-xrdp-sink" >> /etc/xrdp/pulse/default.pa && \
+    echo ".endif" >> /etc/xrdp/pulse/default.pa && \
+    echo ".ifexists module-xrdp-source.so" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-xrdp-source" >> /etc/xrdp/pulse/default.pa && \
+    echo ".endif" >> /etc/xrdp/pulse/default.pa && \
+    echo ".ifexists /SunshineCloud/SunshineCloud-PulseAudio-Modules/module-xrdp-sink.so" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module /SunshineCloud/SunshineCloud-PulseAudio-Modules/module-xrdp-sink.so" >> /etc/xrdp/pulse/default.pa && \
+    echo ".endif" >> /etc/xrdp/pulse/default.pa && \
+    echo ".ifexists /SunshineCloud/SunshineCloud-PulseAudio-Modules/module-xrdp-source.so" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module /SunshineCloud/SunshineCloud-PulseAudio-Modules/module-xrdp-source.so" >> /etc/xrdp/pulse/default.pa && \
+    echo ".endif" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-native-protocol-unix" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-device-restore" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-stream-restore" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-card-restore" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-default-device-restore" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-position-event-sounds" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-role-cork" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-dbus-protocol" >> /etc/xrdp/pulse/default.pa && \
+    echo ".ifexists module-esound-protocol-unix.so" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-esound-protocol-unix" >> /etc/xrdp/pulse/default.pa && \
+    echo ".endif" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-filter-heuristics" >> /etc/xrdp/pulse/default.pa && \
+    echo "# Optional: Additional socket for XRDP connections" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-native-protocol-unix socket=/tmp/pulseaudio.socket auth-group=audio auth-anonymous=1" >> /etc/xrdp/pulse/default.pa && \
+    echo "load-module module-filter-apply" >> /etc/xrdp/pulse/default.pa && \
     # Add bash configuration
     echo "# Please Use Vncpasswd to set the password,Then run the command below" >> /home/matrix0523/.bashrc && \
     echo "# vncserver :0 -geometry 1920x1080 -depth 24 -interface 127.0.0.1 -PasswordFile=/home/matrix0523/.vnc/passwd -xstartup startxfce4 -verbose" >> /home/matrix0523/.bashrc
@@ -461,9 +611,9 @@ RUN mkdir -vp /etc/mysql && \
     echo 'slow_query_log_file = /var/log/mysql/slow.log' >> /etc/mysql/my.cnf && \
     echo 'long_query_time = 2' >> /etc/mysql/my.cnf && \
     echo '' >> /etc/mysql/my.cnf && \
-    echo '# InnoDB 配置' >> /etc/mysql/my.cnf && \
+    echo '# InnoDB 配置 (使用新的配置参数)' >> /etc/mysql/my.cnf && \
     echo 'innodb_buffer_pool_size = 128M' >> /etc/mysql/my.cnf && \
-    echo 'innodb_log_file_size = 64M' >> /etc/mysql/my.cnf && \
+    echo 'innodb_redo_log_capacity = 134217728' >> /etc/mysql/my.cnf && \
     echo 'innodb_flush_log_at_trx_commit = 1' >> /etc/mysql/my.cnf && \
     echo 'innodb_lock_wait_timeout = 50' >> /etc/mysql/my.cnf && \
     echo '' >> /etc/mysql/my.cnf && \
@@ -490,24 +640,32 @@ RUN echo "正在初始化 MySQL 数据库..." && \
     echo "MySQL 数据库初始化完成"
 
 # 创建启动脚本
-RUN echo '#!/bin/bash' > /usr/local/bin/docker-entrypoint.sh && \
-    echo 'set -eo pipefail' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo '' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo '# 确保目录权限正确' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo 'chown -R mysql:mysql /SunshineCloud/MySQL-Data /var/log/mysql /var/run/mysqld' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo '' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo '# 如果数据目录为空，重新初始化' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo 'if [ ! -d "/SunshineCloud/MySQL-Data/mysql" ]; then' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo '    echo "初始化 MySQL 数据库..."' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo '    mysqld --initialize-insecure --user=mysql --basedir=/SunshineCloud/MySQL-Server --datadir=/SunshineCloud/MySQL-Data' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo 'fi' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo '' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo '# 启动 MySQL 服务器' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo 'echo "启动 MySQL 服务器..."' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo 'exec mysqld --user=mysql --console' >> /usr/local/bin/docker-entrypoint.sh
+RUN echo '#!/bin/bash' > /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'set -eo pipefail' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '# 停止任何现有的 MySQL 进程' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'pkill -f mysqld || true' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'sleep 2' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '# 确保目录权限正确' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'chown -R mysql:mysql /SunshineCloud/MySQL-Data /var/log/mysql /var/run/mysqld' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '# 如果数据目录为空，重新初始化' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'if [ ! -d "/SunshineCloud/MySQL-Data/mysql" ]; then' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '    echo "初始化 MySQL 数据库..."' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '    mysqld --initialize-insecure --user=mysql --basedir=/SunshineCloud/MySQL-Server --datadir=/SunshineCloud/MySQL-Data' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'fi' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '# 清理锁文件（如果存在）' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'rm -f /SunshineCloud/MySQL-Data/ibdata1.lock' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'rm -f /var/run/mysqld/mysqld.pid' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '# 启动 MySQL 服务器' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'echo "启动 MySQL 服务器..."' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'exec mysqld --user=mysql --console --defaults-file=/etc/mysql/my.cnf' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh
 
 # 设置启动脚本权限
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/SunshineCloud-MySQL-Start.sh
 
 # 清理临时文件
 USER matrix0523
