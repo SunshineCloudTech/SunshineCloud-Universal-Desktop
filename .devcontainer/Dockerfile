@@ -36,7 +36,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         fonts-noto-core fonts-noto-ui-core fonts-noto-unhinted \
         fonts-noto-color-emoji fonts-noto-cjk fonts-noto-cjk-extra \
         fonts-liberation fonts-liberation2 fonts-dejavu fonts-dejavu-extra \
-        fonts-droid-fallback fonts-ubuntu fonts-opensymbol \
+        fonts-droid-fallback fonts-opensymbol \
         fonts-symbola fonts-unifont fonts-ancient-scripts \
         fonts-arphic-ukai fonts-arphic-uming fonts-wqy-microhei fonts-wqy-zenhei \
         fonts-ipafont fonts-ipafont-gothic fonts-ipafont-mincho \
@@ -54,14 +54,14 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         libasound2-dev libatk1.0-0 libcairo-gobject2 libgconf-2-4 \
         libgdk-pixbuf2.0-0 libglib2.0-dev libglib2.0-0 libgtk-3-0 libgtk-3-dev \
         libnss3-dev libpangocairo-1.0-0 libselinux1-dev libxrandr2 libxss1 \
-        libxtst6 openssh-server pulseaudio sassc tigervnc- standalone-server \
+        libxtst6 openssh-server pulseaudio sassc tigervnc-standalone-server \
         tigervnc-viewer tigervnc-xorg-extension uuid-runtime vim vlc \
         xautolock xfc* xinit xorgxrdp dbus-x11 \
         # Audio packages
         pavucontrol ucspi-tcp gstreamer1.0-plugins-good gstreamer1.0-pulseaudio \
         gstreamer1.0-tools python3-pip \
         # Flatpak packages
-        flatpak xdg-desktop-portal-gtk && \
+        flatpak* xdg-desktop-portal-gtk && \
     # Clean up in the same layer
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
