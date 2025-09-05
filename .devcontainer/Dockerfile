@@ -340,7 +340,7 @@ ADD scripts/SunshineCloud-AutoStart.desktop /home/matrix0523/.config/autostart/S
 # 允许xrdp使用xfce4桌面
 RUN echo "xfce4-session" > /home/matrix0523/.xsession && \
     chown matrix0523:matrix0523 /home/matrix0523/.xsession
-RUN mkdir -vp /var/run/dbus && \
+RUN mkdir -vp /var/run/dbus && touch /etc/X11/Xwrapper.config && \
     cp /etc/X11/xrdp/xorg.conf /etc/X11 && \
     sed -i "s/console/anybody/g" /etc/X11/Xwrapper.config && \
     sed -i "s/xrdp\/xorg/xorg/g" /etc/xrdp/sesman.ini && \
