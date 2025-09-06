@@ -44,9 +44,12 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         fonts-thai-tlwg fonts-khmeros fonts-lao fonts-sil-padauk \
         fonts-tibetan-machine fonts-indic fonts-guru fonts-guru-extra \
         fonts-gargi fonts-samyak fonts-firacode \
+        # XFCE和GTK图标字体支持
+        adwaita-icon-theme gnome-icon-theme hicolor-icon-theme \
+        fonts-font-awesome fontconfig-config \
         bash-completion libgl1 libglib2.0-0 ffmpeg \
         # Additional packages for later use
-        wget apt-transport-https jq supervisor pkgconf file \
+        wget apt-transport-https jq supervisor pkgconf file tightvncpasswd \
         # Desktop environment packages
         ca-certificates crudini dbus dbus-x11 fcitx5 fcitx5-chinese-addons \
         fcitx5-pinyin firefox* fonts-arphic-ukai fonts-arphic-uming \
@@ -56,7 +59,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         libnss3-dev libpangocairo-1.0-0 libselinux1-dev libxrandr2 libxss1 \
         libxtst6 openssh-server pulseaudio sassc tigervnc-standalone-server \
         tigervnc-viewer tigervnc-xorg-extension uuid-runtime vim vlc \
-        xautolock xfc* xinit xorgxrdp dbus-x11 \
+        xautolock xfc* xinit xorgxrdp dbus-x11 im-config \
         # Audio packages
         pavucontrol ucspi-tcp gstreamer1.0-plugins-good gstreamer1.0-pulseaudio \
         gstreamer1.0-tools python3-pip x11-common \
@@ -69,7 +72,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
 # Configure fonts and locales
 RUN echo "配置字体和区域设置..." && \
     # 更新字体缓存
-    fc-cache -fv && \
+    # fc-cache -fv && \
     # 生成所有区域设置
     locale-gen && \
     # 设置默认字体配置
@@ -97,16 +100,37 @@ RUN echo "配置字体和区域设置..." && \
     echo '    <family>monospace</family>' >> /etc/fonts/local.conf && \
     echo '    <prefer>' >> /etc/fonts/local.conf && \
     echo '      <family>Fira Code</family>' >> /etc/fonts/local.conf && \
-    echo '      <family>Source Code Pro</family>' >> /etc/fonts/local.conf && \
     echo '      <family>Liberation Mono</family>' >> /etc/fonts/local.conf && \
+    echo '      <family>DejaVu Sans Mono</family>' >> /etc/fonts/local.conf && \
     echo '      <family>Noto Sans Mono CJK SC</family>' >> /etc/fonts/local.conf && \
     echo '    </prefer>' >> /etc/fonts/local.conf && \
     echo '  </alias>' >> /etc/fonts/local.conf && \
-    echo '  <!-- Unicode字符回退字体 -->' >> /etc/fonts/local.conf && \
+    echo '  <!-- Unicode字符和图标字体回退 -->' >> /etc/fonts/local.conf && \
     echo '  <alias>' >> /etc/fonts/local.conf && \
     echo '    <family>Noto Color Emoji</family>' >> /etc/fonts/local.conf && \
     echo '    <default><family>emoji</family></default>' >> /etc/fonts/local.conf && \
     echo '  </alias>' >> /etc/fonts/local.conf && \
+    echo '  <!-- 确保系统图标字体优先级 -->' >> /etc/fonts/local.conf && \
+    echo '  <match target="pattern">' >> /etc/fonts/local.conf && \
+    echo '    <test name="family" qual="any"><string>monospace</string></test>' >> /etc/fonts/local.conf && \
+    echo '    <edit name="family" mode="prepend" binding="weak">' >> /etc/fonts/local.conf && \
+    echo '      <string>DejaVu Sans Mono</string>' >> /etc/fonts/local.conf && \
+    echo '    </edit>' >> /etc/fonts/local.conf && \
+    echo '  </match>' >> /etc/fonts/local.conf && \
+    echo '  <!-- 保持系统UI字体的图标支持 -->' >> /etc/fonts/local.conf && \
+    echo '  <match target="pattern">' >> /etc/fonts/local.conf && \
+    echo '    <test name="family" qual="any"><string>sans-serif</string></test>' >> /etc/fonts/local.conf && \
+    echo '    <edit name="family" mode="append" binding="weak">' >> /etc/fonts/local.conf && \
+    echo '      <string>DejaVu Sans</string>' >> /etc/fonts/local.conf && \
+    echo '    </edit>' >> /etc/fonts/local.conf && \
+    echo '  </match>' >> /etc/fonts/local.conf && \
+    echo '  <!-- 允许图标字体渲染 -->' >> /etc/fonts/local.conf && \
+    echo '  <match target="font">' >> /etc/fonts/local.conf && \
+    echo '    <test name="family" qual="any"><string>DejaVu Sans</string></test>' >> /etc/fonts/local.conf && \
+    echo '    <edit name="antialias" mode="assign"><bool>true</bool></edit>' >> /etc/fonts/local.conf && \
+    echo '    <edit name="hinting" mode="assign"><bool>true</bool></edit>' >> /etc/fonts/local.conf && \
+    echo '    <edit name="hintstyle" mode="assign"><const>hintslight</const></edit>' >> /etc/fonts/local.conf && \
+    echo '  </match>' >> /etc/fonts/local.conf && \
     echo '</fontconfig>' >> /etc/fonts/local.conf && \
     # 再次更新字体缓存
     fc-cache -fv && \
@@ -247,10 +271,114 @@ RUN mkdir -p /home/matrix0523/.config/fontconfig && \
     echo '      <string>Noto Serif</string>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
     echo '    </edit>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
     echo '  </match>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '  <!-- 确保UI字体正确显示图标 -->' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '  <match target="pattern">' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '    <test qual="any" name="family"><string>sans-serif</string></test>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '    <edit name="family" mode="prepend" binding="weak">' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '      <string>DejaVu Sans</string>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '    </edit>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '  </match>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '  <!-- 保持系统UI渲染质量 -->' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '  <match target="font">' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '    <edit name="antialias" mode="assign"><bool>true</bool></edit>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '    <edit name="hinting" mode="assign"><bool>true</bool></edit>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '    <edit name="hintstyle" mode="assign"><const>hintslight</const></edit>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '    <edit name="rgba" mode="assign"><const>rgb</const></edit>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
+    echo '  </match>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
     echo '</fontconfig>' >> /home/matrix0523/.config/fontconfig/fonts.conf && \
     chown -R matrix0523:matrix0523 /home/matrix0523/.config
 
+# Configure XFCE notification and panel settings for proper icon display
+RUN mkdir -p /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml && \
+    # Configure XFCE panel without notification area
+    echo '<?xml version="1.0" encoding="UTF-8"?>' > /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '<channel name="xfce4-panel" version="1.0">' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '  <property name="configver" type="int" value="2"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '  <property name="panels" type="array">' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '    <value type="int" value="1"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '    <property name="panel-1" type="empty">' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '      <property name="position" type="string" value="p=6;x=0;y=0"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '      <property name="length" type="uint" value="100"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '      <property name="position-locked" type="bool" value="true"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '      <property name="icon-size" type="uint" value="16"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '      <property name="size" type="uint" value="26"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '      <property name="plugin-ids" type="array">' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '        <value type="int" value="1"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '        <value type="int" value="2"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '        <value type="int" value="3"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '        <value type="int" value="4"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '        <value type="int" value="5"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '      </property>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '    </property>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '  </property>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '  <property name="plugins" type="empty">' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '    <property name="plugin-1" type="string" value="applicationsmenu"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '    <property name="plugin-2" type="string" value="tasklist"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '    <property name="plugin-3" type="string" value="separator">' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '      <property name="expand" type="bool" value="true"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '      <property name="style" type="uint" value="0"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '    </property>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '    <property name="plugin-4" type="string" value="clock"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '    <property name="plugin-5" type="string" value="actions"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '  </property>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '</channel>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    # 禁用通知守护进程
+    echo '<?xml version="1.0" encoding="UTF-8"?>' > /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-notifyd.xml && \
+    echo '<channel name="xfce4-notifyd" version="1.0">' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-notifyd.xml && \
+    echo '  <property name="notify-location" type="uint" value="0"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-notifyd.xml && \
+    echo '  <property name="theme" type="string" value="Default"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-notifyd.xml && \
+    echo '  <property name="initial-opacity" type="double" value="0.9"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-notifyd.xml && \
+    echo '  <property name="do-not-disturb" type="bool" value="false"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-notifyd.xml && \
+    echo '</channel>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-notifyd.xml && \
+    # Set proper GTK icon theme configuration
+    mkdir -p /home/matrix0523/.config/gtk-3.0 && \
+    echo '[Settings]' > /home/matrix0523/.config/gtk-3.0/settings.ini && \
+    echo 'gtk-theme-name=Adwaita' >> /home/matrix0523/.config/gtk-3.0/settings.ini && \
+    echo 'gtk-icon-theme-name=Adwaita' >> /home/matrix0523/.config/gtk-3.0/settings.ini && \
+    echo 'gtk-font-name=DejaVu Sans 10' >> /home/matrix0523/.config/gtk-3.0/settings.ini && \
+    echo 'gtk-cursor-theme-name=Adwaita' >> /home/matrix0523/.config/gtk-3.0/settings.ini && \
+    echo 'gtk-cursor-theme-size=24' >> /home/matrix0523/.config/gtk-3.0/settings.ini && \
+    echo 'gtk-toolbar-style=GTK_TOOLBAR_BOTH_HORIZ' >> /home/matrix0523/.config/gtk-3.0/settings.ini && \
+    echo 'gtk-toolbar-icon-size=GTK_ICON_SIZE_SMALL_TOOLBAR' >> /home/matrix0523/.config/gtk-3.0/settings.ini && \
+    echo 'gtk-button-images=1' >> /home/matrix0523/.config/gtk-3.0/settings.ini && \
+    echo 'gtk-menu-images=1' >> /home/matrix0523/.config/gtk-3.0/settings.ini && \
+    echo 'gtk-enable-event-sounds=1' >> /home/matrix0523/.config/gtk-3.0/settings.ini && \
+    echo 'gtk-enable-input-feedback-sounds=1' >> /home/matrix0523/.config/gtk-3.0/settings.ini && \
+    chown -R matrix0523:matrix0523 /home/matrix0523/.config/xfce4 /home/matrix0523/.config/gtk-3.0
+
+# Create symbolic links for SunshineCloud and DATA directories in user homes
+RUN gtk-update-icon-cache -f /usr/share/icons/Adwaita || true && \
+    gtk-update-icon-cache -f /usr/share/icons/hicolor || true
+
 USER root
+# Create script to disable notification area plugin at startup
+RUN echo '#!/bin/bash' > /usr/local/bin/disable-notification-area.sh && \
+    echo '# Script to disable XFCE notification area plugin' >> /usr/local/bin/disable-notification-area.sh && \
+    echo 'export DISPLAY=:0' >> /usr/local/bin/disable-notification-area.sh && \
+    echo 'sleep 5' >> /usr/local/bin/disable-notification-area.sh && \
+    echo '# Remove notification area plugin if exists' >> /usr/local/bin/disable-notification-area.sh && \
+    echo 'xfconf-query -c xfce4-panel -p /plugins/plugin-6 -r 2>/dev/null || true' >> /usr/local/bin/disable-notification-area.sh && \
+    echo '# Disable notification daemon autostart' >> /usr/local/bin/disable-notification-area.sh && \
+    echo 'if [ -f ~/.config/autostart/xfce4-notifyd.desktop ]; then' >> /usr/local/bin/disable-notification-area.sh && \
+    echo '    echo "Hidden=true" >> ~/.config/autostart/xfce4-notifyd.desktop' >> /usr/local/bin/disable-notification-area.sh && \
+    echo 'fi' >> /usr/local/bin/disable-notification-area.sh && \
+    echo '# Kill any running notification daemon' >> /usr/local/bin/disable-notification-area.sh && \
+    echo 'pkill -f xfce4-notifyd 2>/dev/null || true' >> /usr/local/bin/disable-notification-area.sh && \
+    chmod +x /usr/local/bin/disable-notification-area.sh && \
+    # Create autostart entry to run the script
+    mkdir -p /home/matrix0523/.config/autostart && \
+    echo '[Desktop Entry]' > /home/matrix0523/.config/autostart/disable-notification-area.desktop && \
+    echo 'Type=Application' >> /home/matrix0523/.config/autostart/disable-notification-area.desktop && \
+    echo 'Name=Disable Notification Area' >> /home/matrix0523/.config/autostart/disable-notification-area.desktop && \
+    echo 'Exec=/usr/local/bin/disable-notification-area.sh' >> /home/matrix0523/.config/autostart/disable-notification-area.desktop && \
+    echo 'Hidden=false' >> /home/matrix0523/.config/autostart/disable-notification-area.desktop && \
+    echo 'NoDisplay=true' >> /home/matrix0523/.config/autostart/disable-notification-area.desktop && \
+    echo 'X-GNOME-Autostart-enabled=true' >> /home/matrix0523/.config/autostart/disable-notification-area.desktop && \
+    # Copy to Administrator user
+    mkdir -p /home/Administrator/.config/autostart && \
+    cp /home/matrix0523/.config/autostart/disable-notification-area.desktop /home/Administrator/.config/autostart/ && \
+    chown -R matrix0523:matrix0523 /home/matrix0523/.config/autostart && \
+    chown -R Administrator:Administrator /home/Administrator/.config/autostart
 
 # Install fastfetch as matrix0523 user
 USER matrix0523
@@ -358,7 +486,7 @@ RUN chown -R matrix0523:matrix0523 /home/matrix0523/.vnc /home/matrix0523/.confi
     echo "# Disable autospawn to prevent conflicts" >> /etc/pulse/client.conf && \
     echo "autospawn = no" >> /etc/pulse/client.conf && \
     echo "# Use dedicated pulse server socket" >> /etc/pulse/client.conf && \
-    echo "default-server = unix:/tmp/pulse-server" >> /etc/pulse/client.conf && \
+    echo "# default-server = unix:/tmp/pulse-server" >> /etc/pulse/client.conf && \
     echo "# Enable memory file descriptor for better performance" >> /etc/pulse/client.conf && \
     echo "enable-memfd = yes" >> /etc/pulse/client.conf && \
     # Configure ALSA to use PulseAudio
@@ -667,10 +795,101 @@ RUN echo '#!/bin/bash' > /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
 # 设置启动脚本权限
 RUN chmod +x /usr/local/bin/SunshineCloud-MySQL-Start.sh
 
+# Install Redis from official repository
+RUN echo "安装Redis和NodeJS..." && \
+    # 获取Debian版本代号
+    DEBIAN_CODENAME=$(lsb_release -sc) && \
+    echo "检测到Debian版本: $DEBIAN_CODENAME" && \
+    # 设置Redis源和配置路径
+    REDIS_KEYRING="/usr/share/keyrings/redis-archive-keyring.gpg" && \
+    REDIS_LIST_PATH="/etc/apt/sources.list.d/redis.list" && \
+    # 根据版本代号设置源地址
+    case "$DEBIAN_CODENAME" in \
+        bullseye) \
+            REDIS_SOURCE="deb [signed-by=$REDIS_KEYRING] https://packages.redis.io/deb bullseye main" \
+            ;; \
+        bookworm) \
+            REDIS_SOURCE="deb [signed-by=$REDIS_KEYRING] https://packages.redis.io/deb bookworm main" \
+            ;; \
+        focal) \
+            REDIS_SOURCE="deb [signed-by=$REDIS_KEYRING] https://packages.redis.io/deb focal main" \
+            ;; \
+        jammy) \
+            REDIS_SOURCE="deb [signed-by=$REDIS_KEYRING] https://packages.redis.io/deb jammy main" \
+            ;; \
+        *) \
+            echo "不支持的Debian版本代号: $DEBIAN_CODENAME" && exit 1 \
+            ;; \
+    esac && \
+    # 配置Redis APT源
+    echo "配置Redis APT源..." && \
+    echo "$REDIS_SOURCE" > "$REDIS_LIST_PATH" && \
+    # 下载并配置Redis GPG密钥
+    echo "配置Redis GPG密钥..." && \
+    curl -fsSL https://packages.redis.io/gpg -o /tmp/redis-gpg-key && \
+    gpg --dearmor -o "$REDIS_KEYRING" /tmp/redis-gpg-key && \
+    rm -f /tmp/redis-gpg-key && \
+    chmod 644 "$REDIS_KEYRING" && \
+    # 更新APT源并安装Redis
+    echo "更新APT源并安装Redis..." && \
+    apt-get update && \
+    apt-get install -y redis && \
+    # 配置Redis
+    echo "配置Redis服务..." && \
+    # 创建Redis配置目录
+    mkdir -p /etc/redis && \
+    # 创建Redis数据目录
+    mkdir -p /var/lib/redis && \
+    chown redis:redis /var/lib/redis && \
+    # 创建Redis日志目录
+    mkdir -p /var/log/redis && \
+    chown redis:redis /var/log/redis && \
+    # 清理临时文件
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    echo "Redis安装完成。"
+
+# Configure Redis
+RUN echo "配置Redis服务..." && \
+    # 创建Redis配置文件
+    echo "# Redis configuration for SunshineCloud" > /etc/redis/redis.conf && \
+    echo "bind 127.0.0.1" >> /etc/redis/redis.conf && \
+    echo "port 6379" >> /etc/redis/redis.conf && \
+    echo "timeout 0" >> /etc/redis/redis.conf && \
+    echo "save 900 1" >> /etc/redis/redis.conf && \
+    echo "save 300 10" >> /etc/redis/redis.conf && \
+    echo "save 60 10000" >> /etc/redis/redis.conf && \
+    echo "rdbcompression yes" >> /etc/redis/redis.conf && \
+    echo "dbfilename dump.rdb" >> /etc/redis/redis.conf && \
+    echo "dir /var/lib/redis" >> /etc/redis/redis.conf && \
+    echo "logfile /var/log/redis/redis-server.log" >> /etc/redis/redis.conf && \
+    echo "loglevel notice" >> /etc/redis/redis.conf && \
+    echo "maxmemory-policy allkeys-lru" >> /etc/redis/redis.conf && \
+    # 设置权限
+    chown redis:redis /etc/redis/redis.conf && \
+    chmod 640 /etc/redis/redis.conf
+
+# Create Redis startup script
+RUN echo '#!/bin/bash' > /usr/local/bin/SunshineCloud-Redis-Start.sh && \
+    echo 'set -eo pipefail' >> /usr/local/bin/SunshineCloud-Redis-Start.sh && \
+    echo '' >> /usr/local/bin/SunshineCloud-Redis-Start.sh && \
+    echo '# 停止任何现有的Redis进程' >> /usr/local/bin/SunshineCloud-Redis-Start.sh && \
+    echo 'pkill -f redis-server || true' >> /usr/local/bin/SunshineCloud-Redis-Start.sh && \
+    echo 'sleep 2' >> /usr/local/bin/SunshineCloud-Redis-Start.sh && \
+    echo '' >> /usr/local/bin/SunshineCloud-Redis-Start.sh && \
+    echo '# 确保目录权限正确' >> /usr/local/bin/SunshineCloud-Redis-Start.sh && \
+    echo 'chown -R redis:redis /var/lib/redis /var/log/redis' >> /usr/local/bin/SunshineCloud-Redis-Start.sh && \
+    echo '' >> /usr/local/bin/SunshineCloud-Redis-Start.sh && \
+    echo '# 启动Redis服务器' >> /usr/local/bin/SunshineCloud-Redis-Start.sh && \
+    echo 'echo "启动Redis服务器..."' >> /usr/local/bin/SunshineCloud-Redis-Start.sh && \
+    echo 'exec redis-server /etc/redis/redis.conf' >> /usr/local/bin/SunshineCloud-Redis-Start.sh && \
+    chmod +x /usr/local/bin/SunshineCloud-Redis-Start.sh
+
 # 清理临时文件
 USER matrix0523
 WORKDIR /home/matrix0523
-# 暴露 MySQL 端口
-EXPOSE 3306
+# 暴露 MySQL 和 Redis 端口
+EXPOSE 3306 6379
+EXPOSE 3306/udp 6379/udp
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["sudo /usr/local/share/docker-init.sh bash -c 'sudo service supervisor start && sudo service dbus restart && sudo service xrdp start && bash'"]
