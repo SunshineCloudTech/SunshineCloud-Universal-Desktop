@@ -73,7 +73,7 @@ jobs:
             echo "Importing tar to image..."
             docker import $docker_tmp_name.tar $src_image_name
             echo "Creating temporary container from image..."
-            docker create -it -P --name $docker_tmp_name $src_image_name
+            docker create -it -P --name $docker_tmp_name $src_image_name bash
             echo "Committing container with new ENTRYPOINT and CMD..."
             docker commit \
               --change='ENTRYPOINT ["/bin/bash", "-c"]' \
