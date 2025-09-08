@@ -1,4 +1,4 @@
-name: Build Devcontainer Images
+name: Build Desktop Image
 on:
   push:
     branches:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch: # Allow manual triggering
 
 jobs:
-  build-devcontainer:
+  Desktop-Build:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout repository
@@ -54,21 +54,9 @@ jobs:
           run: |
             # export image-name=sunshinecloud-java-devcontainers
             # export image_version=latest
-            devcontainer build --workspace-folder . --image-name sunshinecloud007/sunshinecloud-universal-desktop
+            devcontainer build --workspace-folder . --image-name sunshinecloud007/sunshinecloud-universal-desktop:build-layer
             df -h
-
-        # - name: Merge Docker Image
-        #   run: |
-        #     export src_image_name=sunshinecloud007/sunshinecloud-universal-desktop
-        #     export docker_tmp_name=temp1
-        #     docker create -it -P --name $docker_tmp_name $src_image_name
-        #     docker export $docker_tmp_name -o $docker_tmp_name.tar
-        #     docker rm $docker_tmp_name
-        #     docker rmi $src_image_name
-        #     docker import $docker_tmp_name.tar $src_image_name
-        #     rm $docker_tmp_name.tar
-        #     docker images $src_image_name
 
         - name: Push Docker Image
           run: |
-            docker push sunshinecloud007/sunshinecloud-universal-desktop
+            docker push sunshinecloud007/sunshinecloud-universal-desktop:build-layer
