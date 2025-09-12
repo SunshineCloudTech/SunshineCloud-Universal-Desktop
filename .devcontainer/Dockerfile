@@ -403,6 +403,16 @@ RUN echo "███████╗██╗   ██╗███╗   ██╗�
     echo "    cat /etc/motd" >> /etc/bash.bashrc && \
     echo "  fi" >> /etc/bash.bashrc && \
     echo "fi" >> /etc/bash.bashrc && \
+    # Create welcome message for MOTD
+    echo '#!/bin/sh' > /etc/update-motd.d/10-uname && \
+    echo 'echo "👋 Welcome to SunshineCloud Codespaces! You are on our default image."' >> /etc/update-motd.d/10-uname && \
+    echo 'echo "   - It includes runtimes and tools for Python, Node.js, Docker, and more. See the full list here: https://aka.ms/ghcs-default-image"' >> /etc/update-motd.d/10-uname && \
+    echo 'echo "   - Want to use a custom image instead? Learn more here: https://aka.ms/configure-codespace"' >> /etc/update-motd.d/10-uname && \
+    echo 'echo ""' >> /etc/update-motd.d/10-uname && \
+    echo 'echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P or F1)."' >> /etc/update-motd.d/10-uname && \
+    echo 'echo ""' >> /etc/update-motd.d/10-uname && \
+    echo 'echo "📝 Edit away, run your app as usual, and we'"'"'ll automatically make it available for you to access."' >> /etc/update-motd.d/10-uname && \
+    echo 'echo ""' >> /etc/update-motd.d/10-uname && \
     chmod +x /etc/update-motd.d/10-uname
 
 WORKDIR /SunshineCloud/
