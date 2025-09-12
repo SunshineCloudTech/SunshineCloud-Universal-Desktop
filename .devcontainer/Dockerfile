@@ -1,7 +1,7 @@
 # [Choice] Debian version (use bullseye on local arm64/Apple Silicon): bookworm, bullseye, buster
 ARG VARIANT="bookworm"
 ARG CUSTOM_PACKAGE_LIST="openssl"
-FROM buildpack-deps:${VARIANT}-curl
+FROM buildpack-deps:${VARIANT}
 
 # Set environment variables early
 ENV DEBIAN_FRONTEND=noninteractive
@@ -462,7 +462,7 @@ ADD environments/environment.yml /tmp/micromamba/environment.yml
 ADD system/bin /usr/bin
 ADD system/autostart /etc/xdg/autostart
 ADD system/autostart /home/matrix0523/.config/autostart/
-ADD config/* /etc/supervisor/conf.d/
+ADD config/*.conf /etc/supervisor/conf.d/
 COPY scripts/xstartup /home/matrix0523/.vnc/xstartup
 ADD scripts/SunshineCloud-AutoStart.desktop /home/matrix0523/.config/autostart/SunshineCloud-AutoStart.desktop
 # 允许xrdp使用xfce4桌面
