@@ -60,9 +60,12 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         libxtst6 openssh-server pulseaudio sassc tigervnc-standalone-server \
         tigervnc-viewer tigervnc-xorg-extension uuid-runtime vim vlc \
         xautolock xfc* xinit xorgxrdp dbus-x11 im-config \
+        # XFCE panel plugins
+        xfce4-pulseaudio-plugin xfce4-weather-plugin \
+        xfce4-cpugraph-plugin xfce4-systray-plugin xfce4-panel xfce4-goodies fcitx5-config-qt \
         # Audio packages
         pavucontrol ucspi-tcp gstreamer1.0-plugins-good gstreamer1.0-pulseaudio \
-        gstreamer1.0-tools python3-pip x11-common \
+        gstreamer1.0-tools python3-pip x11-common zenity elementary*icon*theme* \
         # Flatpak packages
         flatpak* xdg-desktop-portal-gtk && \
     # Clean up in the same layer
@@ -308,6 +311,10 @@ RUN mkdir -p /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml && \
     echo '        <value type="int" value="3"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
     echo '        <value type="int" value="4"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
     echo '        <value type="int" value="5"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '        <value type="int" value="6"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '        <value type="int" value="7"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '        <value type="int" value="8"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '        <value type="int" value="9"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
     echo '      </property>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
     echo '    </property>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
     echo '  </property>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
@@ -318,8 +325,12 @@ RUN mkdir -p /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml && \
     echo '      <property name="expand" type="bool" value="true"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
     echo '      <property name="style" type="uint" value="0"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
     echo '    </property>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
-    echo '    <property name="plugin-4" type="string" value="clock"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
-    echo '    <property name="plugin-5" type="string" value="actions"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '    <property name="plugin-4" type="string" value="systray"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '    <property name="plugin-5" type="string" value="pulseaudio"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '    <property name="plugin-6" type="string" value="weather"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '    <property name="plugin-7" type="string" value="cpugraph"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '    <property name="plugin-8" type="string" value="clock"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
+    echo '    <property name="plugin-9" type="string" value="actions"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
     echo '  </property>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
     echo '</channel>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
     # 禁用通知守护进程
@@ -344,41 +355,86 @@ RUN mkdir -p /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml && \
     echo 'gtk-menu-images=1' >> /home/matrix0523/.config/gtk-3.0/settings.ini && \
     echo 'gtk-enable-event-sounds=1' >> /home/matrix0523/.config/gtk-3.0/settings.ini && \
     echo 'gtk-enable-input-feedback-sounds=1' >> /home/matrix0523/.config/gtk-3.0/settings.ini && \
+    # Configure weather plugin with basic settings
+    mkdir -p /home/matrix0523/.config/xfce4/panel && \
+    echo '<?xml version="1.0" encoding="UTF-8"?>' > /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '<weather>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '  <location>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '    <name>New York</name>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '    <latitude>40.7128</latitude>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '    <longitude>-74.0060</longitude>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '    <timezone>America/New_York</timezone>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '  </location>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '  <units>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '    <temperature>celsius</temperature>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '    <pressure>mmhg</pressure>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '    <windspeed>kmh</windspeed>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '  </units>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '  <refresh>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '    <enabled>true</enabled>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '    <interval>30</interval>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '  </refresh>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    echo '</weather>' >> /home/matrix0523/.config/xfce4/panel/weather-6.rc && \
+    # Configure CPU graph plugin with basic settings
+    echo '<?xml version="1.0" encoding="UTF-8"?>' > /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
+    echo '<cpugraph>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
+    echo '  <properties>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
+    echo '    <update-interval>1000</update-interval>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
+    echo '    <width>40</width>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
+    echo '    <height>20</height>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
+    echo '    <bars>true</bars>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
+    echo '    <border>true</border>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
+    echo '    <frame>0</frame>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
+    echo '    <mode>0</mode>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
+    echo '    <color-mode>1</color-mode>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
+    echo '    <foreground1>#0072FF</foreground1>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
+    echo '    <foreground2>#FF7200</foreground2>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
+    echo '    <background>#F5F5F5</background>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
+    echo '  </properties>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
+    echo '</cpugraph>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
     chown -R matrix0523:matrix0523 /home/matrix0523/.config/xfce4 /home/matrix0523/.config/gtk-3.0
+
+# Copy XFCE configuration to Administrator user
+RUN mkdir -p /home/Administrator/.config && \
+    cp -r /home/matrix0523/.config/xfce4 /home/Administrator/.config/ && \
+    cp -r /home/matrix0523/.config/gtk-3.0 /home/Administrator/.config/ && \
+    cp -r /home/matrix0523/.config/fontconfig /home/Administrator/.config/ && \
+    chown -R Administrator:Administrator /home/Administrator/.config
 
 # Create symbolic links for SunshineCloud and DATA directories in user homes
 RUN gtk-update-icon-cache -f /usr/share/icons/Adwaita || true && \
     gtk-update-icon-cache -f /usr/share/icons/hicolor || true
 
-USER root
-# Create script to disable notification area plugin at startup
-RUN echo '#!/bin/bash' > /usr/local/bin/disable-notification-area.sh && \
-    echo '# Script to disable XFCE notification area plugin' >> /usr/local/bin/disable-notification-area.sh && \
-    echo 'export DISPLAY=:0' >> /usr/local/bin/disable-notification-area.sh && \
-    echo 'sleep 5' >> /usr/local/bin/disable-notification-area.sh && \
-    echo '# Remove notification area plugin if exists' >> /usr/local/bin/disable-notification-area.sh && \
-    echo 'xfconf-query -c xfce4-panel -p /plugins/plugin-6 -r 2>/dev/null || true' >> /usr/local/bin/disable-notification-area.sh && \
-    echo '# Disable notification daemon autostart' >> /usr/local/bin/disable-notification-area.sh && \
-    echo 'if [ -f ~/.config/autostart/xfce4-notifyd.desktop ]; then' >> /usr/local/bin/disable-notification-area.sh && \
-    echo '    echo "Hidden=true" >> ~/.config/autostart/xfce4-notifyd.desktop' >> /usr/local/bin/disable-notification-area.sh && \
-    echo 'fi' >> /usr/local/bin/disable-notification-area.sh && \
-    echo '# Kill any running notification daemon' >> /usr/local/bin/disable-notification-area.sh && \
-    echo 'pkill -f xfce4-notifyd 2>/dev/null || true' >> /usr/local/bin/disable-notification-area.sh && \
-    chmod +x /usr/local/bin/disable-notification-area.sh && \
-    # Create autostart entry to run the script
-    mkdir -p /home/matrix0523/.config/autostart && \
-    echo '[Desktop Entry]' > /home/matrix0523/.config/autostart/disable-notification-area.desktop && \
-    echo 'Type=Application' >> /home/matrix0523/.config/autostart/disable-notification-area.desktop && \
-    echo 'Name=Disable Notification Area' >> /home/matrix0523/.config/autostart/disable-notification-area.desktop && \
-    echo 'Exec=/usr/local/bin/disable-notification-area.sh' >> /home/matrix0523/.config/autostart/disable-notification-area.desktop && \
-    echo 'Hidden=false' >> /home/matrix0523/.config/autostart/disable-notification-area.desktop && \
-    echo 'NoDisplay=true' >> /home/matrix0523/.config/autostart/disable-notification-area.desktop && \
-    echo 'X-GNOME-Autostart-enabled=true' >> /home/matrix0523/.config/autostart/disable-notification-area.desktop && \
-    # Copy to Administrator user
-    mkdir -p /home/Administrator/.config/autostart && \
-    cp /home/matrix0523/.config/autostart/disable-notification-area.desktop /home/Administrator/.config/autostart/ && \
+# Create script to configure panel plugins at startup
+RUN echo '#!/bin/bash' > /usr/local/bin/configure-panel-plugins.sh && \
+    echo '# Script to ensure XFCE panel plugins are properly configured' >> /usr/local/bin/configure-panel-plugins.sh && \
+    echo 'export DISPLAY=:0' >> /usr/local/bin/configure-panel-plugins.sh && \
+    echo 'sleep 5' >> /usr/local/bin/configure-panel-plugins.sh && \
+    echo '# Ensure systray plugin is enabled' >> /usr/local/bin/configure-panel-plugins.sh && \
+    echo 'xfconf-query -c xfce4-panel -p /plugins/plugin-4 -s "systray" -t string 2>/dev/null || true' >> /usr/local/bin/configure-panel-plugins.sh && \
+    echo '# Ensure pulseaudio plugin is enabled' >> /usr/local/bin/configure-panel-plugins.sh && \
+    echo 'xfconf-query -c xfce4-panel -p /plugins/plugin-5 -s "pulseaudio" -t string 2>/dev/null || true' >> /usr/local/bin/configure-panel-plugins.sh && \
+    echo '# Ensure weather plugin is enabled' >> /usr/local/bin/configure-panel-plugins.sh && \
+    echo 'xfconf-query -c xfce4-panel -p /plugins/plugin-6 -s "weather" -t string 2>/dev/null || true' >> /usr/local/bin/configure-panel-plugins.sh && \
+    echo '# Ensure cpugraph plugin is enabled' >> /usr/local/bin/configure-panel-plugins.sh && \
+    echo 'xfconf-query -c xfce4-panel -p /plugins/plugin-7 -s "cpugraph" -t string 2>/dev/null || true' >> /usr/local/bin/configure-panel-plugins.sh && \
+    echo '# Restart panel to apply changes' >> /usr/local/bin/configure-panel-plugins.sh && \
+    echo 'xfce4-panel -r 2>/dev/null || true' >> /usr/local/bin/configure-panel-plugins.sh && \
+    chmod +x /usr/local/bin/configure-panel-plugins.sh && \
+    # Create autostart entries for both users
+    mkdir -p /home/matrix0523/.config/autostart /home/Administrator/.config/autostart && \
+    echo '[Desktop Entry]' > /home/matrix0523/.config/autostart/configure-panel-plugins.desktop && \
+    echo 'Type=Application' >> /home/matrix0523/.config/autostart/configure-panel-plugins.desktop && \
+    echo 'Name=Configure Panel Plugins' >> /home/matrix0523/.config/autostart/configure-panel-plugins.desktop && \
+    echo 'Exec=/usr/local/bin/configure-panel-plugins.sh' >> /home/matrix0523/.config/autostart/configure-panel-plugins.desktop && \
+    echo 'Hidden=false' >> /home/matrix0523/.config/autostart/configure-panel-plugins.desktop && \
+    echo 'NoDisplay=true' >> /home/matrix0523/.config/autostart/configure-panel-plugins.desktop && \
+    echo 'X-GNOME-Autostart-enabled=true' >> /home/matrix0523/.config/autostart/configure-panel-plugins.desktop && \
+    cp /home/matrix0523/.config/autostart/configure-panel-plugins.desktop /home/Administrator/.config/autostart/ && \
     chown -R matrix0523:matrix0523 /home/matrix0523/.config/autostart && \
     chown -R Administrator:Administrator /home/Administrator/.config/autostart
+
+USER root
 
 # Install fastfetch as matrix0523 user
 USER matrix0523
