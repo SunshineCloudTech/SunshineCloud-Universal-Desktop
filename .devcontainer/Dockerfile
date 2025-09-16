@@ -395,16 +395,20 @@ RUN mkdir -p /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml && \
     chown -R matrix0523:matrix0523 /home/matrix0523/.config/xfce4 /home/matrix0523/.config/gtk-3.0
 
 # Copy XFCE configuration to Administrator user
+USER root
 RUN mkdir -p /home/Administrator/.config && \
     cp -r /home/matrix0523/.config/xfce4 /home/Administrator/.config/ && \
     cp -r /home/matrix0523/.config/gtk-3.0 /home/Administrator/.config/ && \
     cp -r /home/matrix0523/.config/fontconfig /home/Administrator/.config/ && \
     chown -R Administrator:Administrator /home/Administrator/.config
 
-# Create symbolic links for SunshineCloud and DATA directories in user homes
+USER Administrator
 RUN gtk-update-icon-cache -f /usr/share/icons/Adwaita || true && \
     gtk-update-icon-cache -f /usr/share/icons/hicolor || true
 
+USER matrix0523
+RUN gtk-update-icon-cache -f /usr/share/icons/Adwaita || true && \
+    gtk-update-icon-cache -f /usr/share/icons/hicolor || true
 # Create script to configure panel plugins at startup
 RUN echo '#!/bin/bash' > /usr/local/bin/configure-panel-plugins.sh && \
     echo '# Script to ensure XFCE panel plugins are properly configured' >> /usr/local/bin/configure-panel-plugins.sh && \
@@ -513,6 +517,9 @@ RUN sudo git clone --recursive https://github.com/SunshineCloudTech/SunshineClou
     sudo git clone --recursive https://github.com/vinceliuice/WhiteSur-gtk-theme.git /SunshineCloud/WhiteSur-gtk-theme && \
     sudo git clone --recursive https://github.com/vinceliuice/WhiteSur-wallpapers.git /SunshineCloud/WhiteSur-wallpapers && \
     sudo git clone --recursive https://github.com/vinceliuice/WhiteSur-icon-theme.git /SunshineCloud/WhiteSur-icon-theme && \
+    sudo bash /SunshineCloud/WhiteSur-icon-theme/install.sh && \
+    sudo bash /SunshineCloud/WhiteSur-gtk-theme/install.sh && \
+    sudo bash /SunshineCloud/WhiteSur-wallpapers/install.sh && \
     sudo git clone --recursive https://github.com/novnc/noVNC.git /SunshineCloud/noVNC && \
     sudo git clone --recursive https://github.com/novnc/websockify.git /SunshineCloud/noVNC/utils/websockify
 
