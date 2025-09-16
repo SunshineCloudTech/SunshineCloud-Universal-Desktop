@@ -409,6 +409,7 @@ RUN gtk-update-icon-cache -f /usr/share/icons/Adwaita || true && \
 USER matrix0523
 RUN gtk-update-icon-cache -f /usr/share/icons/Adwaita || true && \
     gtk-update-icon-cache -f /usr/share/icons/hicolor || true
+USER root
 # Create script to configure panel plugins at startup
 RUN echo '#!/bin/bash' > /usr/local/bin/configure-panel-plugins.sh && \
     echo '# Script to ensure XFCE panel plugins are properly configured' >> /usr/local/bin/configure-panel-plugins.sh && \
@@ -437,8 +438,6 @@ RUN echo '#!/bin/bash' > /usr/local/bin/configure-panel-plugins.sh && \
     cp /home/matrix0523/.config/autostart/configure-panel-plugins.desktop /home/Administrator/.config/autostart/ && \
     chown -R matrix0523:matrix0523 /home/matrix0523/.config/autostart && \
     chown -R Administrator:Administrator /home/Administrator/.config/autostart
-
-USER root
 
 # Install fastfetch as matrix0523 user
 USER matrix0523
