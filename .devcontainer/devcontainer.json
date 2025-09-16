@@ -154,11 +154,11 @@
         },
         
         // Kubernetes 工具集：容器编排和管理
-        // "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
-        //     "version": "latest",                  // kubectl 最新版本
-        //     "helm": "latest",                    // Helm 最新版本
-        //     "minikube": "latest"                 // Minikube 最新版本
-        // },
+        "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+            "version": "latest",                  // kubectl 最新版本
+            "helm": "latest",                    // Helm 最新版本
+            "minikube": "latest"                 // Minikube 最新版本
+        },
         
         // Go 语言开发环境：云原生应用开发
         "ghcr.io/devcontainers/features/go:1": {
