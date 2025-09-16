@@ -518,7 +518,7 @@ RUN sudo git clone --recursive https://github.com/SunshineCloudTech/SunshineClou
     sudo git clone --recursive https://github.com/vinceliuice/WhiteSur-icon-theme.git /SunshineCloud/WhiteSur-icon-theme && \
     sudo bash /SunshineCloud/WhiteSur-icon-theme/install.sh && \
     # sudo bash /SunshineCloud/WhiteSur-gtk-theme/install.sh && \
-    sudo bash /SunshineCloud/WhiteSur-wallpapers/install.sh && \
+    sudo bash /SunshineCloud/WhiteSur-wallpapers/install-wallpapers.sh && \
     sudo git clone --recursive https://github.com/novnc/noVNC.git /SunshineCloud/noVNC && \
     sudo git clone --recursive https://github.com/novnc/websockify.git /SunshineCloud/noVNC/utils/websockify
 
