@@ -62,7 +62,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         xautolock xfc* xinit xorgxrdp dbus-x11 im-config \
         # XFCE panel plugins
         xfce4-pulseaudio-plugin xfce4-weather-plugin \
-        xfce4-cpugraph-plugin xfce4-systray-plugin xfce4-panel xfce4-goodies fcitx5-config-qt \
+        xfce4-cpugraph-plugin xfce4-panel xfce4-goodies fcitx5-config-qt \
         # Audio packages
         pavucontrol ucspi-tcp gstreamer1.0-plugins-good gstreamer1.0-pulseaudio \
         gstreamer1.0-tools python3-pip x11-common zenity elementary*icon*theme* \
