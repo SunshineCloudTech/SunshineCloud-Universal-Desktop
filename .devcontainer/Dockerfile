@@ -989,8 +989,8 @@ RUN echo "Installing JetBrains Toolbox..." && \
     mkdir -p jetbrains-toolbox && \
     # Extract the archive
     tar -xzf jetbrains-toolbox.tar.gz -C jetbrains-toolbox --strip-components=1 && \
-    # Move the executable to /usr/local/bin for system-wide access
-    mv jetbrains-toolbox/* /usr/local/ && \
+    # Copy the executable to /usr/local/bin for system-wide access
+    cp -R jetbrains-toolbox/* /usr/local/ && \
     # Set executable permissions
     chmod +x /usr/local/bin/jetbrains-toolbox && \
     # Create desktop entry for all users
