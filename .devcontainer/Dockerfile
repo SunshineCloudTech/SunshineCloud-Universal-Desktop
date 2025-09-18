@@ -1010,28 +1010,28 @@ RUN echo "Installing JetBrains Toolbox..." && \
     echo "JetBrains Toolbox installation completed"
 
 # Install Visual Studio Code
-RUN echo "Installing Visual Studio Code..." && \
-    # Install dependencies
-    apt-get update && \
-    apt-get install -y wget gpg apt-transport-https && \
-    # Add Microsoft GPG key and repository
-    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/microsoft.gpg && \
-    install -D -o root -g root -m 644 /tmp/microsoft.gpg /usr/share/keyrings/microsoft.gpg && \
-    rm -f /tmp/microsoft.gpg && \
-    # Create VS Code repository configuration
-    echo "Types: deb" > /etc/apt/sources.list.d/vscode.sources && \
-    echo "URIs: https://packages.microsoft.com/repos/code" >> /etc/apt/sources.list.d/vscode.sources && \
-    echo "Suites: stable" >> /etc/apt/sources.list.d/vscode.sources && \
-    echo "Components: main" >> /etc/apt/sources.list.d/vscode.sources && \
-    echo "Architectures: amd64,arm64,armhf" >> /etc/apt/sources.list.d/vscode.sources && \
-    echo "Signed-By: /usr/share/keyrings/microsoft.gpg" >> /etc/apt/sources.list.d/vscode.sources && \
-    # Update package cache and install VS Code
-    apt-get update && \
-    # apt-get install -y code && \
-    # Clean up
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    echo "Visual Studio Code installation completed"
+# RUN echo "Installing Visual Studio Code..." && \
+#     # Install dependencies
+#     apt-get update && \
+#     apt-get install -y wget gpg apt-transport-https && \
+#     # Add Microsoft GPG key and repository
+#     wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/microsoft.gpg && \
+#     install -D -o root -g root -m 644 /tmp/microsoft.gpg /usr/share/keyrings/microsoft.gpg && \
+#     rm -f /tmp/microsoft.gpg && \
+#     # Create VS Code repository configuration
+#     echo "Types: deb" > /etc/apt/sources.list.d/vscode.sources && \
+#     echo "URIs: https://packages.microsoft.com/repos/code" >> /etc/apt/sources.list.d/vscode.sources && \
+#     echo "Suites: stable" >> /etc/apt/sources.list.d/vscode.sources && \
+#     echo "Components: main" >> /etc/apt/sources.list.d/vscode.sources && \
+#     echo "Architectures: amd64,arm64,armhf" >> /etc/apt/sources.list.d/vscode.sources && \
+#     echo "Signed-By: /usr/share/keyrings/microsoft.gpg" >> /etc/apt/sources.list.d/vscode.sources && \
+#     # Update package cache and install VS Code
+#     apt-get update && \
+#     # apt-get install -y code && \
+#     # Clean up
+#     apt-get clean && \
+#     rm -rf /var/lib/apt/lists/* && \
+#     echo "Visual Studio Code installation completed"
 
 # 清理临时文件
 USER matrix0523
