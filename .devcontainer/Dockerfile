@@ -10,6 +10,10 @@ ENV MAMBA_ROOT_PREFIX="/opt/micromamba"
 ENV PATH="/SunshineCloud/Homebrew/bin:${PATH}"
 ENV HOMEBREW_PREFIX=/SunshineCloud/Homebrew
 ENV HOMEBREW_CACHE=/SunshineCloud/Homebrew/cache
+# Locale environment variables
+ENV LANG=zh_CN.UTF-8
+ENV LANGUAGE=zh_CN:en
+ENV LC_ALL=zh_CN.UTF-8
 # Flatpak environment variables
 ENV XDG_DATA_DIRS="/usr/local/share:/usr/share:/var/lib/flatpak/exports/share:/home/matrix0523/.local/share/flatpak/exports/share"
 ENV FLATPAK_SYSTEM_DIR="/var/lib/flatpak"
@@ -74,10 +78,16 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
 
 # Configure fonts and locales
 RUN echo "配置字体和区域设置..." && \
-    # 更新字体缓存
-    # fc-cache -fv && \
-    # 生成所有区域设置
-    locale-gen && \
+    # 配置需要的 locale
+    echo "zh_CN.UTF-8 UTF-8" >> /etc/locale.gen && \
+    echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
+    # 生成指定的区域设置
+    locale-gen zh_CN.UTF-8 en_US.UTF-8 && \
+    # 设置系统默认 locale 为简体中文
+    echo "LANG=zh_CN.UTF-8" > /etc/default/locale && \
+    echo "LANGUAGE=zh_CN:en" >> /etc/default/locale && \
+    echo "LC_ALL=zh_CN.UTF-8" >> /etc/default/locale && \
+    update-locale LANG=zh_CN.UTF-8 LC_ALL=zh_CN.UTF-8 && \
     # 设置默认字体配置
     echo '<?xml version="1.0"?>' > /etc/fonts/local.conf && \
     echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">' >> /etc/fonts/local.conf && \
@@ -155,6 +165,20 @@ RUN useradd -m "Administrator" -s /bin/bash && \
     usermod -a -G ollama root && \
     usermod -a -G ollama Administrator && \
     usermod -a -G ollama matrix0523
+
+# Configure user locale settings
+RUN echo "# Locale settings for Chinese/English support" >> /home/matrix0523/.bashrc && \
+    echo "export LANG=zh_CN.UTF-8" >> /home/matrix0523/.bashrc && \
+    echo "export LANGUAGE=zh_CN:en" >> /home/matrix0523/.bashrc && \
+    echo "export LC_ALL=zh_CN.UTF-8" >> /home/matrix0523/.bashrc && \
+    echo "# Locale settings for Chinese/English support" >> /home/Administrator/.bashrc && \
+    echo "export LANG=zh_CN.UTF-8" >> /home/Administrator/.bashrc && \
+    echo "export LANGUAGE=zh_CN:en" >> /home/Administrator/.bashrc && \
+    echo "export LC_ALL=zh_CN.UTF-8" >> /home/Administrator/.bashrc && \
+    # Copy locale settings to profile
+    echo "export LANG=zh_CN.UTF-8" >> /etc/profile && \
+    echo "export LANGUAGE=zh_CN:en" >> /etc/profile && \
+    echo "export LC_ALL=zh_CN.UTF-8" >> /etc/profile
 
 # Create standard user directories for all users
 RUN mkdir -vp /home/Administrator/Desktop /home/Administrator/Documents /home/Administrator/Downloads \
@@ -544,7 +568,6 @@ RUN mkdir -vp /var/run/dbus && touch /etc/X11/Xwrapper.config && \
     cp /etc/X11/xrdp/xorg.conf /etc/X11 && \
     sed -i "s/console/anybody/g" /etc/X11/Xwrapper.config && \
     sed -i "s/xrdp\/xorg/xorg/g" /etc/xrdp/sesman.ini && \
-    locale-gen en_US.UTF-8 && \
     echo "xfce4-session" > /etc/skel/.Xclients
 # 配置xrdp
 RUN sed -i.bak '/^test -x \/etc\/X11\/Xsession/ s/^/#/' /etc/xrdp/startwm.sh && \
@@ -957,11 +980,64 @@ RUN echo '#!/bin/bash' > /usr/local/bin/SunshineCloud-Redis-Start.sh && \
     echo 'exec redis-server /etc/redis/redis.conf' >> /usr/local/bin/SunshineCloud-Redis-Start.sh && \
     chmod +x /usr/local/bin/SunshineCloud-Redis-Start.sh
 
+# Install JetBrains Toolbox
+RUN echo "Installing JetBrains Toolbox..." && \
+    cd /tmp && \
+    # Download JetBrains Toolbox for Linux AMD64
+    wget -O jetbrains-toolbox.tar.gz "https://download.jetbrains.com/toolbox/jetbrains-toolbox-2.9.0.56191.tar.gz" && \
+    # Create extraction directory
+    mkdir -p jetbrains-toolbox && \
+    # Extract the archive
+    tar -xzf jetbrains-toolbox.tar.gz -C jetbrains-toolbox --strip-components=1 && \
+    # Move the executable to /usr/local/bin for system-wide access
+    mv jetbrains-toolbox/* /usr/local/ && \
+    # Set executable permissions
+    chmod +x /usr/local/bin/jetbrains-toolbox && \
+    # Create desktop entry for all users
+    mkdir -p /usr/share/applications && \
+    echo '[Desktop Entry]' > /usr/share/applications/jetbrains-toolbox.desktop && \
+    echo 'Version=1.0' >> /usr/share/applications/jetbrains-toolbox.desktop && \
+    echo 'Type=Application' >> /usr/share/applications/jetbrains-toolbox.desktop && \
+    echo 'Name=JetBrains Toolbox' >> /usr/share/applications/jetbrains-toolbox.desktop && \
+    echo 'Icon=jetbrains-toolbox' >> /usr/share/applications/jetbrains-toolbox.desktop && \
+    echo 'Exec=jetbrains-toolbox' >> /usr/share/applications/jetbrains-toolbox.desktop && \
+    echo 'Comment=JetBrains Toolbox App' >> /usr/share/applications/jetbrains-toolbox.desktop && \
+    echo 'Categories=Development;' >> /usr/share/applications/jetbrains-toolbox.desktop && \
+    echo 'Terminal=false' >> /usr/share/applications/jetbrains-toolbox.desktop && \
+    echo 'StartupWMClass=jetbrains-toolbox' >> /usr/share/applications/jetbrains-toolbox.desktop && \
+    # Clean up temporary files
+    rm -rf /tmp/jetbrains-toolbox* && \
+    echo "JetBrains Toolbox installation completed"
+
+# Install Visual Studio Code
+RUN echo "Installing Visual Studio Code..." && \
+    # Install dependencies
+    apt-get update && \
+    apt-get install -y wget gpg apt-transport-https && \
+    # Add Microsoft GPG key and repository
+    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/microsoft.gpg && \
+    install -D -o root -g root -m 644 /tmp/microsoft.gpg /usr/share/keyrings/microsoft.gpg && \
+    rm -f /tmp/microsoft.gpg && \
+    # Create VS Code repository configuration
+    echo "Types: deb" > /etc/apt/sources.list.d/vscode.sources && \
+    echo "URIs: https://packages.microsoft.com/repos/code" >> /etc/apt/sources.list.d/vscode.sources && \
+    echo "Suites: stable" >> /etc/apt/sources.list.d/vscode.sources && \
+    echo "Components: main" >> /etc/apt/sources.list.d/vscode.sources && \
+    echo "Architectures: amd64,arm64,armhf" >> /etc/apt/sources.list.d/vscode.sources && \
+    echo "Signed-By: /usr/share/keyrings/microsoft.gpg" >> /etc/apt/sources.list.d/vscode.sources && \
+    # Update package cache and install VS Code
+    apt-get update && \
+    apt-get install -y code && \
+    # Clean up
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    echo "Visual Studio Code installation completed"
+
 # 清理临时文件
 USER matrix0523
 WORKDIR /home/matrix0523
 # 暴露 MySQL 和 Redis 端口
-EXPOSE 3306 6379
-EXPOSE 3306/udp 6379/udp
+EXPOSE 3306 6379 3389
+EXPOSE 3306/udp 6379/udp 3389/udp
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["sudo /usr/local/share/docker-init.sh bash -c 'sudo service supervisor start && sudo service dbus restart && sudo service xrdp start && bash'"]
