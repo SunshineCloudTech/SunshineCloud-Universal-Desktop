@@ -1027,7 +1027,7 @@ RUN echo "Installing Visual Studio Code..." && \
     echo "Signed-By: /usr/share/keyrings/microsoft.gpg" >> /etc/apt/sources.list.d/vscode.sources && \
     # Update package cache and install VS Code
     apt-get update && \
-    apt-get install -y code && \
+    # apt-get install -y code && \
     # Clean up
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
