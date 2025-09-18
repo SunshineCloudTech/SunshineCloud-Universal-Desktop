@@ -1,7 +1,7 @@
-name: Desktop Image Release
+name: Build Image Step 2
 on:
   workflow_run:
-    workflows: ["Build Desktop Image"]
+    workflows: ["Build Image Step 1"]
     types:
       - completed
     branches:
@@ -53,7 +53,7 @@ jobs:
             username: ${{ secrets.DOCKER_USERNAME }}
             password: ${{ secrets.DOCKER_PASSWORD }}
 
-        - name: Build Image
+        - name: Build Base Image
           run: |
             docker pull sunshinecloud007/sunshinecloud-universal-desktop:build-layer
             df -h
@@ -82,8 +82,8 @@ jobs:
               $docker_tmp_name $src_image_name
             rm $docker_tmp_name.tar
             docker images $src_image_name
-            docker tag $src_image_name sunshinecloud007/sunshinecloud-universal-desktop:latest
+            docker tag $src_image_name sunshinecloud007/sunshinecloud-universal-desktop:base
 
         - name: Push Docker Image
           run: |
-            docker push sunshinecloud007/sunshinecloud-universal-desktop:latest
+            docker push sunshinecloud007/sunshinecloud-universal-desktop:base
