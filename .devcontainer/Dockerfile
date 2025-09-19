@@ -649,6 +649,12 @@ ENV MYSQL_DOWNLOAD_URL=https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-${MYS
 # MySQL 用户和组配置
 ENV MYSQL_USER=mysql
 ENV MYSQL_GROUP=mysql
+ENV MYSQL_UID=1001
+ENV MYSQL_GID=1001
+
+# MySQL 默认密码配置
+ENV MYSQL_ROOT_PASSWORD=123456789
+ENV MYSQL_GROUP=mysql
 ENV MYSQL_UID=1999
 ENV MYSQL_GID=1999
 
@@ -862,6 +868,22 @@ RUN echo "正在初始化 MySQL 数据库..." && \
     --datadir=${MYSQL_DATADIR} && \
     echo "MySQL 数据库初始化完成"
 
+# 设置 MySQL root 用户默认密码
+RUN echo "配置 MySQL 默认密码..." && \
+    # 临时启动 MySQL 服务器
+    ${MYSQL_PREFIX}/bin/mysqld_safe --user=${MYSQL_USER} --datadir=${MYSQL_DATADIR} --socket=/tmp/mysql_temp.sock --pid-file=/tmp/mysql_temp.pid --skip-networking --skip-grant-tables &> /dev/null & \
+    MYSQL_PID=$! && \
+    # 等待 MySQL 启动
+    sleep 10 && \
+    # 设置 root 用户密码
+    ${MYSQL_PREFIX}/bin/mysql --socket=/tmp/mysql_temp.sock --execute="FLUSH PRIVILEGES; ALTER USER 'root'@'localhost' IDENTIFIED BY '123456789'; CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '123456789'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES;" && \
+    # 停止临时 MySQL 服务器
+    kill $MYSQL_PID && \
+    wait $MYSQL_PID 2>/dev/null || true && \
+    # 清理临时文件
+    rm -f /tmp/mysql_temp.sock /tmp/mysql_temp.pid && \
+    echo "MySQL 默认密码配置完成，root 密码: 123456789"
+
 # 创建启动脚本
 RUN echo '#!/bin/bash' > /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
     echo 'set -eo pipefail' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
@@ -877,6 +899,15 @@ RUN echo '#!/bin/bash' > /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
     echo 'if [ ! -d "/SunshineCloud/MySQL-Data/mysql" ]; then' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
     echo '    echo "初始化 MySQL 数据库..."' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
     echo '    mysqld --initialize-insecure --user=mysql --basedir=/SunshineCloud/MySQL-Server --datadir=/SunshineCloud/MySQL-Data' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '    echo "设置 MySQL root 密码..."' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '    # 临时启动 MySQL 设置密码' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '    mysqld_safe --user=mysql --datadir=/SunshineCloud/MySQL-Data --socket=/tmp/mysql_setup.sock --pid-file=/tmp/mysql_setup.pid --skip-networking --skip-grant-tables &' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '    SETUP_PID=$!' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '    sleep 10' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '    mysql --socket=/tmp/mysql_setup.sock --execute="FLUSH PRIVILEGES; ALTER USER '\''root'\''@'\''localhost'\'' IDENTIFIED BY '\''123456789'\''; CREATE USER IF NOT EXISTS '\''root'\''@'\''%'\'' IDENTIFIED BY '\''123456789'\''; GRANT ALL PRIVILEGES ON *.* TO '\''root'\''@'\''%'\'' WITH GRANT OPTION; FLUSH PRIVILEGES;"' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '    kill $SETUP_PID && wait $SETUP_PID 2>/dev/null || true' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '    rm -f /tmp/mysql_setup.sock /tmp/mysql_setup.pid' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '    echo "MySQL root 密码设置完成: 123456789"' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
     echo 'fi' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
     echo '' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
     echo '# 清理锁文件（如果存在）' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
