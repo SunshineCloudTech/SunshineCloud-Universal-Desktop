@@ -849,6 +849,7 @@ RUN mkdir -vp /etc/mysql && \
     echo '# 连接配置' >> /etc/mysql/my.cnf && \
     echo 'max_connections = 200' >> /etc/mysql/my.cnf && \
     echo 'max_connect_errors = 10' >> /etc/mysql/my.cnf && \
+    echo 'bind-address = 0.0.0.0' >> /etc/mysql/my.cnf && \
     echo '' >> /etc/mysql/my.cnf && \
     echo '[mysql]' >> /etc/mysql/my.cnf && \
     echo 'default-character-set = utf8mb4' >> /etc/mysql/my.cnf && \
@@ -867,22 +868,6 @@ RUN echo "正在初始化 MySQL 数据库..." && \
     --basedir=${MYSQL_PREFIX} \
     --datadir=${MYSQL_DATADIR} && \
     echo "MySQL 数据库初始化完成"
-
-# 设置 MySQL root 用户默认密码
-RUN echo "配置 MySQL 默认密码..." && \
-    # 临时启动 MySQL 服务器
-    ${MYSQL_PREFIX}/bin/mysqld_safe --user=${MYSQL_USER} --datadir=${MYSQL_DATADIR} --socket=/tmp/mysql_temp.sock --pid-file=/tmp/mysql_temp.pid --skip-networking --skip-grant-tables &> /dev/null & \
-    MYSQL_PID=$! && \
-    # 等待 MySQL 启动
-    sleep 10 && \
-    # 设置 root 用户密码
-    ${MYSQL_PREFIX}/bin/mysql --socket=/tmp/mysql_temp.sock --execute="FLUSH PRIVILEGES; ALTER USER 'root'@'localhost' IDENTIFIED BY '123456789'; CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '123456789'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES;" && \
-    # 停止临时 MySQL 服务器
-    kill $MYSQL_PID && \
-    wait $MYSQL_PID 2>/dev/null || true && \
-    # 清理临时文件
-    rm -f /tmp/mysql_temp.sock /tmp/mysql_temp.pid && \
-    echo "MySQL 默认密码配置完成，root 密码: 123456789"
 
 # 创建启动脚本
 RUN echo '#!/bin/bash' > /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
@@ -920,6 +905,19 @@ RUN echo '#!/bin/bash' > /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
 
 # 设置启动脚本权限
 RUN chmod +x /usr/local/bin/SunshineCloud-MySQL-Start.sh
+
+# 修复 MySQL Supervisor 配置
+RUN echo "修复 MySQL Supervisor 配置..." && \
+    # 确保必要的目录存在并设置正确权限
+    mkdir -p ${MYSQL_RUNDIR} ${MYSQL_LOGDIR} ${MYSQL_DATADIR} && \
+    chown -R ${MYSQL_USER}:${MYSQL_GROUP} ${MYSQL_RUNDIR} ${MYSQL_LOGDIR} ${MYSQL_DATADIR} && \
+    chmod 755 ${MYSQL_RUNDIR} ${MYSQL_LOGDIR} ${MYSQL_DATADIR} && \
+    # 确保 MySQL 可执行文件存在且有执行权限
+    chmod +x ${MYSQL_PREFIX}/bin/mysqld && \
+    # 创建 MySQL 日志文件（如果不存在）
+    touch /var/log/mysql/mysql.err.log /var/log/mysql/mysql.out.log && \
+    chown ${MYSQL_USER}:${MYSQL_GROUP} /var/log/mysql/mysql.err.log /var/log/mysql/mysql.out.log && \
+    echo "MySQL Supervisor 配置修复完成"
 
 # Install Redis from official repository
 RUN echo "安装Redis和NodeJS..." && \

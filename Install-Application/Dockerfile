@@ -1,4 +1,7 @@
 FROM sunshinecloud007/sunshinecloud-universal-desktop:base
+ENV MYSQL_PREFIX=/SunshineCloud/MySQL-Server
+ENV MYSQL_DATADIR=/SunshineCloud/MySQL-Data
+ENV MYSQL_USER=mysql
 USER root
 # Install JetBrains Toolbox
 RUN echo "Installing JetBrains Toolbox..." && \
@@ -53,6 +56,22 @@ RUN echo "Installing Visual Studio Code..." && \
     rm -rf /var/lib/apt/lists/* && \
     echo "Visual Studio Code installation completed"
 RUN curl -fsSL https://ollama.com/install.sh | sh
+# 设置 MySQL root 用户默认密码
+RUN echo "配置 MySQL 默认密码..." && \
+    # 临时启动 MySQL 服务器
+    ${MYSQL_PREFIX}/bin/mysqld_safe --user=${MYSQL_USER} --datadir=${MYSQL_DATADIR} --socket=/tmp/mysql_temp.sock --pid-file=/tmp/mysql_temp.pid --skip-networking --skip-grant-tables &> /dev/null & \
+    MYSQL_PID=$! && \
+    # 等待 MySQL 启动
+    sleep 10 && \
+    # 设置 root 用户密码
+    ${MYSQL_PREFIX}/bin/mysql --socket=/tmp/mysql_temp.sock --execute="FLUSH PRIVILEGES; ALTER USER 'root'@'localhost' IDENTIFIED BY '123456789'; CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '123456789'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES;" && \
+    # 停止临时 MySQL 服务器
+    kill $MYSQL_PID && \
+    wait $MYSQL_PID 2>/dev/null || true && \
+    # 清理临时文件
+    rm -f /tmp/mysql_temp.sock /tmp/mysql_temp.pid && \
+    echo "MySQL 默认密码配置完成，root 密码: 123456789"
+
 USER matrix0523
 WORKDIR /home/matrix0523
 # 暴露 MySQL 和 Redis 端口
