@@ -47,12 +47,12 @@ RUN echo "Installing Visual Studio Code..." && \
     echo "Signed-By: /usr/share/keyrings/microsoft.gpg" >> /etc/apt/sources.list.d/vscode.sources && \
     # Update package cache and install VS Code
     apt-get update && \
-    # apt-get install -y code && \
+    apt-get install -y code && \
     # Clean up
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     echo "Visual Studio Code installation completed"
-
+RUN curl -fsSL https://ollama.com/install.sh | sh
 USER matrix0523
 WORKDIR /home/matrix0523
 # 暴露 MySQL 和 Redis 端口
