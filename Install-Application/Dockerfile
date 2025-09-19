@@ -1,4 +1,5 @@
 FROM sunshinecloud007/sunshinecloud-universal-desktop:base
+USER root
 # Install JetBrains Toolbox
 RUN echo "Installing JetBrains Toolbox..." && \
     cd /tmp && \
@@ -52,5 +53,10 @@ RUN echo "Installing Visual Studio Code..." && \
     rm -rf /var/lib/apt/lists/* && \
     echo "Visual Studio Code installation completed"
 
+USER matrix0523
+WORKDIR /home/matrix0523
+# 暴露 MySQL 和 Redis 端口
+EXPOSE 3306 6379 3389
+EXPOSE 3306/udp 6379/udp 3389/udp
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["sudo /usr/local/share/docker-init.sh bash -c 'sudo service supervisor start && sudo service dbus restart && sudo service xrdp start && bash'"]
