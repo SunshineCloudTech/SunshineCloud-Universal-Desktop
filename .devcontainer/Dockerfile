@@ -843,7 +843,6 @@ RUN mkdir -vp /etc/mysql && \
     echo '# 连接配置' >> /etc/mysql/my.cnf && \
     echo 'max_connections = 200' >> /etc/mysql/my.cnf && \
     echo 'max_connect_errors = 10' >> /etc/mysql/my.cnf && \
-    echo 'bind-address = 0.0.0.0' >> /etc/mysql/my.cnf && \
     echo '' >> /etc/mysql/my.cnf && \
     echo '[mysql]' >> /etc/mysql/my.cnf && \
     echo 'default-character-set = utf8mb4' >> /etc/mysql/my.cnf && \
@@ -863,18 +862,33 @@ RUN echo "正在初始化 MySQL 数据库..." && \
     --datadir=${MYSQL_DATADIR} && \
     echo "MySQL 数据库初始化完成"
 
-# 修复 MySQL Supervisor 配置
-RUN echo "修复 MySQL Supervisor 配置..." && \
-    # 确保必要的目录存在并设置正确权限
-    mkdir -p ${MYSQL_RUNDIR} ${MYSQL_LOGDIR} ${MYSQL_DATADIR} && \
-    chown -R ${MYSQL_USER}:${MYSQL_GROUP} ${MYSQL_RUNDIR} ${MYSQL_LOGDIR} ${MYSQL_DATADIR} && \
-    chmod 755 ${MYSQL_RUNDIR} ${MYSQL_LOGDIR} ${MYSQL_DATADIR} && \
-    # 确保 MySQL 可执行文件存在且有执行权限
-    chmod +x ${MYSQL_PREFIX}/bin/mysqld && \
-    # 创建 MySQL 日志文件（如果不存在）
-    touch /var/log/mysql/mysql.err.log /var/log/mysql/mysql.out.log && \
-    chown ${MYSQL_USER}:${MYSQL_GROUP} /var/log/mysql/mysql.err.log /var/log/mysql/mysql.out.log && \
-    echo "MySQL Supervisor 配置修复完成"
+# 创建启动脚本
+RUN echo '#!/bin/bash' > /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'set -eo pipefail' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '# 停止任何现有的 MySQL 进程' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'pkill -f mysqld || true' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'sleep 2' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '# 确保目录权限正确' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'chown -R mysql:mysql /SunshineCloud/MySQL-Data /var/log/mysql /var/run/mysqld' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '# 如果数据目录为空，重新初始化' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'if [ ! -d "/SunshineCloud/MySQL-Data/mysql" ]; then' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '    echo "初始化 MySQL 数据库..."' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '    mysqld --initialize-insecure --user=mysql --basedir=/SunshineCloud/MySQL-Server --datadir=/SunshineCloud/MySQL-Data' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'fi' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '# 清理锁文件（如果存在）' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'rm -f /SunshineCloud/MySQL-Data/ibdata1.lock' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'rm -f /var/run/mysqld/mysqld.pid' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo '# 启动 MySQL 服务器' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'echo "启动 MySQL 服务器..."' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh && \
+    echo 'exec mysqld --user=mysql --console --defaults-file=/etc/mysql/my.cnf' >> /usr/local/bin/SunshineCloud-MySQL-Start.sh
+
+# 设置启动脚本权限
+RUN chmod +x /usr/local/bin/SunshineCloud-MySQL-Start.sh
 
 # Install Redis from official repository
 RUN echo "安装Redis和NodeJS..." && \
