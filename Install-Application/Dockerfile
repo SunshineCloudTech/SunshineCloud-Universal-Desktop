@@ -76,26 +76,6 @@ RUN echo "配置 MySQL 默认密码..." && \
     # 清理临时文件
     rm -f /tmp/mysql_temp.sock /tmp/mysql_temp.pid && \
     echo "MySQL 默认密码配置完成，root 密码: 123456789"
-# Install Rust toolchain using official rustup installer
-RUN echo "Installing Rust toolchain using rustup..." && \
-    # Download and run the official rustup installer
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable && \
-    # Source the cargo environment to make rust tools available
-    echo '. "/usr/local/cargo/env"' >> /etc/profile && \
-    echo 'export CARGO_HOME="/usr/local/cargo"' >> /etc/profile && \
-    echo 'export RUSTUP_HOME="/usr/local/rustup"' >> /etc/profile && \
-    source /etc/profile && \
-    # Verify installation
-    rustc --version && \
-    cargo --version && \
-    # Install additional useful Rust components
-    rustup component add rustfmt clippy rust-analysis rust-src && \
-    # Install commonly used Rust tools
-    cargo install cargo-edit cargo-watch cargo-tree && \
-    # Set proper permissions for all users
-    chmod -R 755 ${RUSTUP_HOME} ${CARGO_HOME} && \
-    echo "Rust toolchain installation completed"
-
 # Install NVIDIA Container Toolkit using official method
 RUN echo "Installing NVIDIA Container Toolkit..." && \
     # Configure the production repository
