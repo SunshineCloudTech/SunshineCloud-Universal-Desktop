@@ -2,6 +2,8 @@ FROM sunshinecloud007/sunshinecloud-universal-desktop:base
 ENV MYSQL_PREFIX=/SunshineCloud/MySQL-Server
 ENV MYSQL_DATADIR=/SunshineCloud/MySQL-Data
 ENV MYSQL_USER=mysql
+ENV CARGO_HOME=/usr/local/cargo
+ENV RUSTUP_HOME=/usr/local/rustup
 USER root
 # Install JetBrains Toolbox
 RUN echo "Installing JetBrains Toolbox..." && \
@@ -9,25 +11,28 @@ RUN echo "Installing JetBrains Toolbox..." && \
     # Download JetBrains Toolbox for Linux AMD64
     wget -O jetbrains-toolbox.tar.gz "https://download.jetbrains.com/toolbox/jetbrains-toolbox-2.9.0.56191.tar.gz" && \
     # Create extraction directory
-    mkdir -p jetbrains-toolbox && \
+    mkdir -vp /usr/local/jetbrains-toolbox && \
     # Extract the archive
-    tar -xzf jetbrains-toolbox.tar.gz -C jetbrains-toolbox --strip-components=1 && \
+    tar -xzf jetbrains-toolbox.tar.gz -C /usr/local/jetbrains-toolbox --strip-components=1 && \
     # Copy the executable to /usr/local/bin for system-wide access
-    cp -R jetbrains-toolbox/* /usr/local/ && \
+    # cp -R jetbrains-toolbox/* /usr/local/ && \
+    ln -s /usr/local/jetbrains-toolbox/bin/jetbrains-toolbox /usr/local/bin/jetbrains-toolbox && \
     # Set executable permissions
-    chmod +x /usr/local/bin/jetbrains-toolbox && \
+    chmod +x /usr/local/jetbrains-toolbox/bin/jetbrains-toolbox && \
     # Create desktop entry for all users
     mkdir -p /usr/share/applications && \
     echo '[Desktop Entry]' > /usr/share/applications/jetbrains-toolbox.desktop && \
     echo 'Version=1.0' >> /usr/share/applications/jetbrains-toolbox.desktop && \
     echo 'Type=Application' >> /usr/share/applications/jetbrains-toolbox.desktop && \
     echo 'Name=JetBrains Toolbox' >> /usr/share/applications/jetbrains-toolbox.desktop && \
-    echo 'Icon=jetbrains-toolbox' >> /usr/share/applications/jetbrains-toolbox.desktop && \
+    echo 'Icon=/usr/local/jetbrains-toolbox/toolbox-tray-color.png' >> /usr/share/applications/jetbrains-toolbox.desktop && \
     echo 'Exec=jetbrains-toolbox' >> /usr/share/applications/jetbrains-toolbox.desktop && \
     echo 'Comment=JetBrains Toolbox App' >> /usr/share/applications/jetbrains-toolbox.desktop && \
     echo 'Categories=Development;' >> /usr/share/applications/jetbrains-toolbox.desktop && \
     echo 'Terminal=false' >> /usr/share/applications/jetbrains-toolbox.desktop && \
     echo 'StartupWMClass=jetbrains-toolbox' >> /usr/share/applications/jetbrains-toolbox.desktop && \
+    echo 'Path=/usr/local/jetbrains-toolbox' >> /usr/share/applications/jetbrains-toolbox.desktop && \
+    echo 'StartupNotify=true' >> /usr/share/applications/jetbrains-toolbox.desktop && \
     # Clean up temporary files
     rm -rf /tmp/jetbrains-toolbox* && \
     echo "JetBrains Toolbox installation completed"
@@ -71,6 +76,41 @@ RUN echo "配置 MySQL 默认密码..." && \
     # 清理临时文件
     rm -f /tmp/mysql_temp.sock /tmp/mysql_temp.pid && \
     echo "MySQL 默认密码配置完成，root 密码: 123456789"
+# Install Rust toolchain using official rustup installer
+RUN echo "Installing Rust toolchain using rustup..." && \
+    # Download and run the official rustup installer
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable && \
+    # Source the cargo environment to make rust tools available
+    # . ${CARGO_HOME}/env && \
+    # Verify installation
+    rustc --version && \
+    cargo --version && \
+    # Install additional useful Rust components
+    rustup component add rustfmt clippy rust-analysis rust-src && \
+    # Install commonly used Rust tools
+    cargo install cargo-edit cargo-watch cargo-tree && \
+    # Set proper permissions for all users
+    chmod -R 755 ${RUSTUP_HOME} ${CARGO_HOME} && \
+    echo "Rust toolchain installation completed"
+
+# Install NVIDIA Container Toolkit using official method
+RUN echo "Installing NVIDIA Container Toolkit..." && \
+    # Configure the production repository
+    curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg && \
+    curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+    tee /etc/apt/sources.list.d/nvidia-container-toolkit.list && \
+    # Update the packages list from the repository
+    apt-get update && \
+    # Install the NVIDIA Container Toolkit packages
+    apt-get install -y nvidia-container-toolkit && \
+    # Configure the container runtime for Docker
+    nvidia-ctk runtime configure --runtime=docker && \
+    # systemctl restart docker || true && \
+    # Clean up
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    echo "NVIDIA Container Toolkit installation completed"
 
 USER matrix0523
 WORKDIR /home/matrix0523
