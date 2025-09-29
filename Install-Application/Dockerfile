@@ -81,7 +81,8 @@ RUN echo "Installing Rust toolchain using rustup..." && \
     # Download and run the official rustup installer
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable && \
     # Source the cargo environment to make rust tools available
-    # . ${CARGO_HOME}/env && \
+    echo '. "/usr/local/cargo/env"' >> /etc/profile && \
+    source /etc/profile && \
     # Verify installation
     rustc --version && \
     cargo --version && \
