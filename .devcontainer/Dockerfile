@@ -418,6 +418,7 @@ RUN mkdir -p /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml && \
     echo '</cpugraph>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
     chown -R matrix0523:matrix0523 /home/matrix0523/.config/xfce4 /home/matrix0523/.config/gtk-3.0
 
+USER root   
 # 优化 XRDP 性能配置 - 减少连接卡顿
 RUN echo "优化 XRDP 配置以提升性能..." && \
     # 备份原始配置文件
