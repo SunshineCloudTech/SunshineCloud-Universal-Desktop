@@ -418,6 +418,63 @@ RUN mkdir -p /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml && \
     echo '</cpugraph>' >> /home/matrix0523/.config/xfce4/panel/cpugraph-7.rc && \
     chown -R matrix0523:matrix0523 /home/matrix0523/.config/xfce4 /home/matrix0523/.config/gtk-3.0
 
+# 优化 XRDP 性能配置 - 减少连接卡顿
+RUN echo "优化 XRDP 配置以提升性能..." && \
+    # 备份原始配置文件
+    cp /etc/xrdp/xrdp.ini /etc/xrdp/xrdp.ini.bak && \
+    cp /etc/xrdp/sesman.ini /etc/xrdp/sesman.ini.bak && \
+    # 优化 xrdp.ini 配置
+    echo "# XRDP Performance Optimizations" >> /etc/xrdp/xrdp.ini && \
+    echo "" >> /etc/xrdp/xrdp.ini && \
+    # 设置编码优化
+    sed -i 's/^bitmap_cache=.*/bitmap_cache=yes/' /etc/xrdp/xrdp.ini && \
+    sed -i 's/^bitmap_compression=.*/bitmap_compression=yes/' /etc/xrdp/xrdp.ini && \
+    sed -i 's/^bulk_compression=.*/bulk_compression=yes/' /etc/xrdp/xrdp.ini && \
+    # 添加性能优化参数
+    echo "# 优化网络传输" >> /etc/xrdp/xrdp.ini && \
+    echo "tcp_nodelay=yes" >> /etc/xrdp/xrdp.ini && \
+    echo "tcp_keepalive=yes" >> /etc/xrdp/xrdp.ini && \
+    echo "use_fastpath=both" >> /etc/xrdp/xrdp.ini && \
+    echo "fastpath_input=yes" >> /etc/xrdp/xrdp.ini && \
+    echo "fastpath_output=yes" >> /etc/xrdp/xrdp.ini && \
+    echo "" >> /etc/xrdp/xrdp.ini && \
+    # 优化颜色深度和分辨率
+    echo "# 显示优化" >> /etc/xrdp/xrdp.ini && \
+    echo "max_bpp=32" >> /etc/xrdp/xrdp.ini && \
+    echo "xserverbpp=24" >> /etc/xrdp/xrdp.ini && \
+    echo "" >> /etc/xrdp/xrdp.ini && \
+    # 优化缓存设置
+    echo "# 缓存优化" >> /etc/xrdp/xrdp.ini && \
+    echo "bitmap_cache_persist_enable=yes" >> /etc/xrdp/xrdp.ini && \
+    echo "bitmap_cache_memory_limit=64000000" >> /etc/xrdp/xrdp.ini && \
+    echo "" >> /etc/xrdp/xrdp.ini && \
+    # 优化 sesman.ini 配置
+    echo "优化会话管理器配置..." && \
+    # 设置会话超时
+    sed -i 's/^DisconnectedTimeLimit=.*/DisconnectedTimeLimit=0/' /etc/xrdp/sesman.ini && \
+    sed -i 's/^IdleTimeLimit=.*/IdleTimeLimit=0/' /etc/xrdp/sesman.ini && \
+    # 启用会话共享
+    sed -i 's/^EnableUserWindowManager=.*/EnableUserWindowManager=true/' /etc/xrdp/sesman.ini
+# 添加系统级性能优化
+RUN echo "应用系统级性能优化..." && \
+    # 优化内核参数
+    echo "# XRDP 系统性能优化配置" >> /etc/sysctl.conf && \
+    echo "# 网络缓冲区优化" >> /etc/sysctl.conf && \
+    echo "net.core.rmem_default = 262144" >> /etc/sysctl.conf && \
+    echo "net.core.rmem_max = 16777216" >> /etc/sysctl.conf && \
+    echo "net.core.wmem_default = 262144" >> /etc/sysctl.conf && \
+    echo "net.core.wmem_max = 16777216" >> /etc/sysctl.conf && \
+    echo "" >> /etc/sysctl.conf && \
+    echo "# TCP 优化" >> /etc/sysctl.conf && \
+    echo "net.ipv4.tcp_rmem = 4096 87380 16777216" >> /etc/sysctl.conf && \
+    echo "net.ipv4.tcp_wmem = 4096 65536 16777216" >> /etc/sysctl.conf && \
+    echo "net.ipv4.tcp_congestion_control = bbr" >> /etc/sysctl.conf && \
+    echo "net.ipv4.tcp_window_scaling = 1" >> /etc/sysctl.conf && \
+    echo "net.ipv4.tcp_timestamps = 1" >> /etc/sysctl.conf && \
+    echo "net.ipv4.tcp_sack = 1" >> /etc/sysctl.conf && \
+    echo "" >> /etc/sysctl.conf && \
+    echo "# 文件系统优化" >> /etc/sysctl.conf && \
+    echo "fs.file-max = 2097152" >> /etc/sysctl.conf
 # Copy XFCE configuration to Administrator user
 USER root
 RUN mkdir -p /home/Administrator/.config && \
