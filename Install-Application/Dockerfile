@@ -20,19 +20,19 @@ RUN echo "Installing JetBrains Toolbox..." && \
     # Set executable permissions
     chmod +x /usr/local/jetbrains-toolbox/bin/jetbrains-toolbox && \
     # Create desktop entry for all users
-    mkdir -p /usr/share/applications && \
-    echo '[Desktop Entry]' > /usr/share/applications/jetbrains-toolbox.desktop && \
-    echo 'Version=1.0' >> /usr/share/applications/jetbrains-toolbox.desktop && \
-    echo 'Type=Application' >> /usr/share/applications/jetbrains-toolbox.desktop && \
-    echo 'Name=JetBrains Toolbox' >> /usr/share/applications/jetbrains-toolbox.desktop && \
-    echo 'Icon=/usr/local/jetbrains-toolbox/toolbox-tray-color.png' >> /usr/share/applications/jetbrains-toolbox.desktop && \
-    echo 'Exec=jetbrains-toolbox' >> /usr/share/applications/jetbrains-toolbox.desktop && \
-    echo 'Comment=JetBrains Toolbox App' >> /usr/share/applications/jetbrains-toolbox.desktop && \
-    echo 'Categories=Development;' >> /usr/share/applications/jetbrains-toolbox.desktop && \
-    echo 'Terminal=false' >> /usr/share/applications/jetbrains-toolbox.desktop && \
-    echo 'StartupWMClass=jetbrains-toolbox' >> /usr/share/applications/jetbrains-toolbox.desktop && \
-    echo 'Path=/usr/local/jetbrains-toolbox' >> /usr/share/applications/jetbrains-toolbox.desktop && \
-    echo 'StartupNotify=true' >> /usr/share/applications/jetbrains-toolbox.desktop && \
+    mkdir -p /home/matrix0523/Desktop && \
+    echo '[Desktop Entry]' > /home/matrix0523/Desktop/jetbrains-toolbox.desktop && \
+    echo 'Version=1.0' >> /home/matrix0523/Desktop/jetbrains-toolbox.desktop && \
+    echo 'Type=Application' >> /home/matrix0523/Desktop/jetbrains-toolbox.desktop && \
+    echo 'Name=JetBrains Toolbox' >> /home/matrix0523/Desktop/jetbrains-toolbox.desktop && \
+    echo 'Icon=/usr/local/jetbrains-toolbox/toolbox-tray-color.png' >> /home/matrix0523/Desktop/jetbrains-toolbox.desktop && \
+    echo 'Exec=jetbrains-toolbox' >> /home/matrix0523/Desktop/jetbrains-toolbox.desktop && \
+    echo 'Comment=JetBrains Toolbox App' >> /home/matrix0523/Desktop/jetbrains-toolbox.desktop && \
+    echo 'Categories=Development;' >> /home/matrix0523/Desktop/jetbrains-toolbox.desktop && \
+    echo 'Terminal=false' >> /home/matrix0523/Desktop/jetbrains-toolbox.desktop && \
+    echo 'StartupWMClass=jetbrains-toolbox' >> /home/matrix0523/Desktop/jetbrains-toolbox.desktop && \
+    echo 'Path=/usr/local/jetbrains-toolbox' >> /home/matrix0523/Desktop/jetbrains-toolbox.desktop && \
+    echo 'StartupNotify=true' >> /home/matrix0523/Desktop/jetbrains-toolbox.desktop && \
     # Clean up temporary files
     rm -rf /tmp/jetbrains-toolbox* && \
     echo "JetBrains Toolbox installation completed"
@@ -94,11 +94,19 @@ RUN echo "Installing NVIDIA Container Toolkit..." && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     echo "NVIDIA Container Toolkit installation completed"
+# 安装虚拟化相关包
+RUN apt-get update && apt-get install -y \
+    qemu-kvm \
+    qemu-system* \
+    bridge-utils \
+    policykit-1 \
+    dbus-x11 \
+    && apt-get clean
 
 USER matrix0523
 WORKDIR /home/matrix0523
 # 暴露 MySQL 和 Redis 端口
-EXPOSE 3306 6379 3389
-EXPOSE 3306/udp 6379/udp 3389/udp
+EXPOSE 3306 6379 3389 22
+EXPOSE 3306/udp 6379/udp 3389/udp 22/udp
 ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["sudo /usr/local/share/docker-init.sh bash -c 'sudo service supervisor start && sudo service dbus restart && sudo service xrdp start && bash'"]
+CMD ["sudo /usr/local/share/ssh-init.sh && sudo /usr/local/share/docker-init.sh bash -c 'sudo service supervisor start && sudo service dbus restart && sudo service xrdp start && bash'"]
