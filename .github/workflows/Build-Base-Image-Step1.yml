@@ -64,7 +64,8 @@ jobs:
         - name: Build Image
           uses: devcontainers/ci@v0.3
           with:
-            imageName: sunshinecloud007/sunshinecloud-universal-desktop:build-layer
+            imageName: sunshinecloud007/sunshinecloud-universal-desktop
+            imageTag: build-layer
             # cacheFrom: ghcr.io/example/example-devcontainer
             push: always
 
