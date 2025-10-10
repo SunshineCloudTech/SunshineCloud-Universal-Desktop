@@ -63,7 +63,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         libnss3-dev libpangocairo-1.0-0 libselinux1-dev libxrandr2 libxss1 \
         libxtst6 openssh-server pulseaudio sassc tigervnc-standalone-server \
         tigervnc-viewer tigervnc-xorg-extension uuid-runtime vim vlc \
-        xautolock xfc* xinit xorgxrdp dbus-x11 im-config \
+        xautolock xfc* xinit xorgxrdp im-config \
         # XFCE panel plugins
         xfce4-pulseaudio-plugin xfce4-weather-plugin \
         xfce4-cpugraph-plugin xfce4-panel xfce4-goodies fcitx5-config-qt \
@@ -71,7 +71,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         pavucontrol ucspi-tcp gstreamer1.0-plugins-good gstreamer1.0-pulseaudio \
         gstreamer1.0-tools python3-pip x11-common zenity elementary*icon*theme* \
         # Flatpak packages
-        flatpak* xdg-desktop-portal-gtk && \
+        flatpak* xdg-desktop-portal-gtk systemd systemd-sysv && \
     # Clean up in the same layer
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
