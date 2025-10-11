@@ -101,12 +101,47 @@ RUN apt-get update && apt-get install -y \
     bridge-utils \
     policykit-1 \
     dbus-x11 \
+    chromium-* \
     && apt-get clean
+
+WORKDIR /tmp
+
+# Install spark-store dependencies
+RUN echo "Installing spark-store dependencies..." && \
+    apt-get update && \
+    apt-get install -y \
+        libdtkcore5 \
+        libdtkgui5 \
+        libdtkwidget5 \
+        libqt5concurrent5 \
+        dde-qt5integration \
+        aria2 \
+        libnotify-bin \
+        qtwayland5 \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    echo "spark-store dependencies installation completed"
+
+# Install spark-store
+RUN echo "Installing spark-store..." && \
+    wget https://gitee.com/spark-store-project/spark-store/releases/download/4.8.2/spark-store_4.8.2_amd64.deb && \
+    dpkg -i spark-store_4.8.2_amd64.deb && \
+    apt install -f -y && \
+    rm -f spark-store_4.8.2_amd64.deb && \
+    echo "spark-store installation completed"   
 
 USER matrix0523
 WORKDIR /home/matrix0523
+
+# Copy and setup the entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+USER root
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+USER matrix0523
+
 # 暴露 MySQL 和 Redis 端口
 EXPOSE 3306 6379 3389 22
 EXPOSE 3306/udp 6379/udp 3389/udp 22/udp
+
 ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["sudo /usr/local/share/ssh-init.sh && sudo /usr/local/share/docker-init.sh bash -c 'sudo service supervisor start && sudo service dbus restart && sudo service xrdp start && bash'"]
+CMD ["sudo /usr/local/bin/docker-entrypoint.sh"]
