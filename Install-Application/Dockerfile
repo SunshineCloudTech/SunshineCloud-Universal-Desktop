@@ -94,14 +94,22 @@ RUN echo "Installing NVIDIA Container Toolkit..." && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     echo "NVIDIA Container Toolkit installation completed"
-# 安装虚拟化相关包
+# 安装虚拟化相关包和 Chromium 相关软件包
 RUN apt-get update && apt-get install -y \
     qemu-kvm \
     qemu-system* \
     bridge-utils \
     policykit-1 \
     dbus-x11 \
-    chromium-* \
+    chromium \
+    chromium-common \
+    chromium-lwn4chrome \
+    chromium-tt-rss-notifier \
+    chromium-sandbox \
+    chromium-l10n \
+    chromium-shell \
+    chromium-driver \
+    chromium-headless-shell \
     && apt-get clean
 
 WORKDIR /tmp
@@ -132,16 +140,15 @@ RUN echo "Installing spark-store..." && \
 
 USER matrix0523
 WORKDIR /home/matrix0523
-
 # Copy and setup the entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 USER root
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 USER matrix0523
-
+WORKDIR /home/matrix0523
 # 暴露 MySQL 和 Redis 端口
 EXPOSE 3306 6379 3389 22
 EXPOSE 3306/udp 6379/udp 3389/udp 22/udp
 
 ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["sudo /usr/local/bin/docker-entrypoint.sh"]
+CMD ["/usr/local/bin/docker-entrypoint.sh"]
