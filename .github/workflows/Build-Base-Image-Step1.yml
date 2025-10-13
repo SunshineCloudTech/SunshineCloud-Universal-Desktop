@@ -1,8 +1,8 @@
 name: Build Image Step 1
 on:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
   workflow_dispatch: # Allow manual triggering
 
 jobs:
@@ -27,6 +27,10 @@ jobs:
             npm_prune: "True"
             npm_clean: "True"
             os_swap: "True"
+            
+        - name: Remove / Purge Docker 
+          run: |
+            sudo apt purge -y docker* 
 
         - name: Set up QEMU
           uses: docker/setup-qemu-action@v3

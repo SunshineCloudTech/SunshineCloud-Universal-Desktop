@@ -560,7 +560,7 @@ WORKDIR /SunshineCloud/
 USER matrix0523
 
 # Download PulseAudio XRDP modules and clone repositories
-COPY scripts/install-pulseaudio-xrdp-modules.sh /tmp/install-pulseaudio-xrdp-modules.sh
+ADD scripts/install-pulseaudio-xrdp-modules.sh /tmp/install-pulseaudio-xrdp-modules.sh
 RUN sudo chmod +x /tmp/install-pulseaudio-xrdp-modules.sh && \
     sudo bash /tmp/install-pulseaudio-xrdp-modules.sh && \
     sudo rm -f /tmp/install-pulseaudio-xrdp-modules.sh
@@ -579,7 +579,6 @@ RUN sudo git clone --recursive https://github.com/SunshineCloudTech/SunshineClou
     sudo git clone --recursive https://github.com/novnc/websockify.git /SunshineCloud/noVNC/utils/websockify
 
 USER root
-
 # Configure noVNC and SSL certificates
 RUN ln -s /SunshineCloud/noVNC/vnc.html /SunshineCloud/noVNC/index.html && \
     openssl req -batch -new -x509 -days 365 -nodes -out /SunshineCloud/noVNC/self.pem -keyout /SunshineCloud/noVNC/utils/websockify/self.pem -subj "/C=US/ST=CA/L=San Francisco/O=SunshineCloud/OU=IT Department/CN=localhost" && \
@@ -591,7 +590,7 @@ ADD system/bin /usr/bin
 ADD system/autostart /etc/xdg/autostart
 ADD system/autostart /home/matrix0523/.config/autostart/
 ADD config/*.conf /etc/supervisor/conf.d/
-COPY scripts/xstartup /home/matrix0523/.vnc/xstartup
+ADD scripts/xstartup /home/matrix0523/.vnc/xstartup
 ADD scripts/SunshineCloud-AutoStart.desktop /home/matrix0523/.config/autostart/SunshineCloud-AutoStart.desktop
 # 允许xrdp使用xfce4桌面
 RUN echo "xfce4-session" > /home/matrix0523/.xsession && \
