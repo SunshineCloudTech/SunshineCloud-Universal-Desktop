@@ -30,7 +30,8 @@ jobs:
 
         - name: Remove / Purge Docker 
           run: |
-            sudo apt purge -y docker* 
+            sudo apt purge -y docker*
+            df -h
 
         - name: Set up Docker
           uses: docker/setup-docker-action@v4
