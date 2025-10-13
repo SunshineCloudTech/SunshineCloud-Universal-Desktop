@@ -114,30 +114,6 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /tmp
 
-# Install spark-store dependencies
-RUN echo "Installing spark-store dependencies..." && \
-    apt-get update && \
-    apt-get install -y \
-        libdtkcore5 \
-        libdtkgui5 \
-        libdtkwidget5 \
-        libqt5concurrent5 \
-        dde-qt5integration \
-        aria2 \
-        libnotify-bin \
-        qtwayland5 \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    echo "spark-store dependencies installation completed"
-
-# Install spark-store
-RUN echo "Installing spark-store..." && \
-    wget https://gitee.com/spark-store-project/spark-store/releases/download/4.8.2/spark-store_4.8.2_amd64.deb && \
-    dpkg -i spark-store_4.8.2_amd64.deb && \
-    apt install -f -y && \
-    rm -f spark-store_4.8.2_amd64.deb && \
-    echo "spark-store installation completed"   
-
 USER matrix0523
 WORKDIR /home/matrix0523
 # Copy and setup the entrypoint script

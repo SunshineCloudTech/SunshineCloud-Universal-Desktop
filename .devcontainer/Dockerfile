@@ -63,7 +63,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends ${CUSTOM_PACKAG
         libnss3-dev libpangocairo-1.0-0 libselinux1-dev libxrandr2 libxss1 \
         libxtst6 openssh-server pulseaudio sassc tigervnc-standalone-server \
         tigervnc-viewer tigervnc-xorg-extension uuid-runtime vim vlc \
-        xautolock xfc* xinit xorgxrdp im-config \
+        xautolock xfce* xinit xorgxrdp im-config \
         # XFCE panel plugins
         xfce4-pulseaudio-plugin xfce4-weather-plugin \
         xfce4-cpugraph-plugin xfce4-panel xfce4-goodies fcitx5-config-qt \
@@ -357,14 +357,6 @@ RUN mkdir -p /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml && \
     echo '    <property name="plugin-9" type="string" value="actions"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
     echo '  </property>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
     echo '</channel>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml && \
-    # 禁用通知守护进程
-    echo '<?xml version="1.0" encoding="UTF-8"?>' > /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-notifyd.xml && \
-    echo '<channel name="xfce4-notifyd" version="1.0">' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-notifyd.xml && \
-    echo '  <property name="notify-location" type="uint" value="0"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-notifyd.xml && \
-    echo '  <property name="theme" type="string" value="Default"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-notifyd.xml && \
-    echo '  <property name="initial-opacity" type="double" value="0.9"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-notifyd.xml && \
-    echo '  <property name="do-not-disturb" type="bool" value="false"/>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-notifyd.xml && \
-    echo '</channel>' >> /home/matrix0523/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-notifyd.xml && \
     # Set proper GTK icon theme configuration
     mkdir -p /home/matrix0523/.config/gtk-3.0 && \
     echo '[Settings]' > /home/matrix0523/.config/gtk-3.0/settings.ini && \
