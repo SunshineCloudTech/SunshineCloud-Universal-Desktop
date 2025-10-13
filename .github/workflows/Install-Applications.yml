@@ -63,7 +63,3 @@ jobs:
             tags: |
               sunshinecloud007/sunshinecloud-universal-desktop:latest
               sunshinecloud007/sunshinecloud-universal-desktop:latest-${{ github.sha }}
-
-        - name: Print Disk Usage
-          run: |
-            df -h   
