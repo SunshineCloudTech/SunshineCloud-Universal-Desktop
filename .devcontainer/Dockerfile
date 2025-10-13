@@ -597,27 +597,27 @@ RUN echo "=== Downloading PulseAudio XRDP Modules ===" && \
     echo "Downloaded file size: $FILE_SIZE bytes" && \
     \
     if [ "$FILE_SIZE" -gt "10000" ]; then \
-        if tar -tzf /tmp/pulseaudio-xrdp-utils.tar.gz > /dev/null 2>&1; then \
+        if sudo tar -tzf /tmp/pulseaudio-xrdp-utils.tar.gz > /dev/null 2>&1; then \
             echo "✅ Valid tar.gz file" && \
             echo "Step 5: Extracting archive..." && \
-            mkdir -p /SunshineCloud/SunshineCloud-PulseAudio-Modules && \
-            cd /tmp && tar -xzf pulseaudio-xrdp-utils.tar.gz && \
+            sudo mkdir -p /SunshineCloud/SunshineCloud-PulseAudio-Modules && \
+            cd /tmp && sudo tar -xzf pulseaudio-xrdp-utils.tar.gz && \
             \
             echo "Step 6: Searching for module files..." && \
-            find /tmp -type f -name "*.so" -ls && \
+            sudo find /tmp -type f -name "*.so" -ls && \
             \
             echo "Step 7: Copying modules to destination..." && \
             MODULE_COUNT=0 && \
-            if find /tmp -type f -name "module-xrdp-source.so" -exec cp -v {} /SunshineCloud/SunshineCloud-PulseAudio-Modules/ \; | grep -q "module-xrdp-source.so"; then \
+            if sudo find /tmp -type f -name "module-xrdp-source.so" -exec cp -v {} /SunshineCloud/SunshineCloud-PulseAudio-Modules/ \; | grep -q "module-xrdp-source.so"; then \
                 MODULE_COUNT=$((MODULE_COUNT + 1)); \
             fi && \
-            if find /tmp -type f -name "module-xrdp-sink.so" -exec cp -v {} /SunshineCloud/SunshineCloud-PulseAudio-Modules/ \; | grep -q "module-xrdp-sink.so"; then \
+            if sudo find /tmp -type f -name "module-xrdp-sink.so" -exec cp -v {} /SunshineCloud/SunshineCloud-PulseAudio-Modules/ \; | grep -q "module-xrdp-sink.so"; then \
                 MODULE_COUNT=$((MODULE_COUNT + 1)); \
             fi && \
             \
             if [ "$MODULE_COUNT" -gt "0" ]; then \
                 echo "✅ Successfully copied $MODULE_COUNT module(s)" && \
-                ls -lh /SunshineCloud/SunshineCloud-PulseAudio-Modules/; \
+                sudo ls -lh /SunshineCloud/SunshineCloud-PulseAudio-Modules/; \
             else \
                 echo "⚠️  Warning: No PulseAudio modules found in archive"; \
             fi; \
@@ -632,9 +632,9 @@ RUN echo "=== Downloading PulseAudio XRDP Modules ===" && \
     fi && \
     \
     echo "Step 8: Cleaning up..." && \
-    rm -rf /tmp/pulseaudio-xrdp-utils.tar.gz /tmp/pulseaudio-modules/ /tmp/SunshineCloud-Universal-Utils-main/ /tmp/pulseaudio-xrdp-utils-*/ && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
+    sudo rm -rf /tmp/pulseaudio-xrdp-utils.tar.gz /tmp/pulseaudio-modules/ /tmp/SunshineCloud-Universal-Utils-main/ /tmp/pulseaudio-xrdp-utils-*/ && \
+    sudo apt-get clean && \
+    sudo rm -rf /var/lib/apt/lists/* && \
     echo "=== PulseAudio XRDP Module Installation Complete ==="
 
 WORKDIR /SunshineCloud/
