@@ -1,13 +1,13 @@
 name: Build Image Step 1
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
   workflow_dispatch: # Allow manual triggering
 
 jobs:
   Build-Base-Image-Step1:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
         - name: Checkout repository
           uses: actions/checkout@v4
