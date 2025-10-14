@@ -7,7 +7,7 @@ on:
 
 jobs:
   Build-Base-Image-Step1:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
         - name: Checkout repository
           uses: actions/checkout@v4
