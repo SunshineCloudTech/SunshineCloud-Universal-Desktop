@@ -1,8 +1,8 @@
 name: Build Image Step 2
 on:
-  push:
-    branches:
-      - main  
+  # push:
+  #   branches:
+  #     - main  
   workflow_run:
     workflows: ["Build Image Step 1"]
     types:
