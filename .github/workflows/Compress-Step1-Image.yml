@@ -1,4 +1,4 @@
-name: Build Image Step 2
+name: Compress Step 1 Image
 on:
   # push:
   #   branches:
@@ -12,7 +12,7 @@ on:
   workflow_dispatch: # Allow manual triggering
 
 jobs:
-  Build-Base-Image-Step2:
+  Compress-Step1-Image:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout repository
@@ -58,12 +58,12 @@ jobs:
 
         - name: Build Base Image
           run: |
-            docker pull sunshinecloud007/sunshinecloud-universal-desktop:build-layer
+            docker pull sunshinecloud007/sunshinecloud-universal-desktop:base
             df -h
 
         - name: Merge Docker Image
           run: |
-            export src_image_name=sunshinecloud007/sunshinecloud-universal-desktop:build-layer
+            export src_image_name=sunshinecloud007/sunshinecloud-universal-desktop:base
             export docker_tmp_name=temp1
             echo "Creating temporary container from image..."
             docker create -it -P --name $docker_tmp_name $src_image_name
@@ -85,8 +85,8 @@ jobs:
               $docker_tmp_name $src_image_name
             rm $docker_tmp_name.tar
             docker images $src_image_name
-            docker tag $src_image_name sunshinecloud007/sunshinecloud-universal-desktop:base
+            docker tag $src_image_name sunshinecloud007/sunshinecloud-universal-desktop:step1
 
         - name: Push Docker Image
           run: |
-            docker push sunshinecloud007/sunshinecloud-universal-desktop:base
+            docker push sunshinecloud007/sunshinecloud-universal-desktop:step1

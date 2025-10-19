@@ -1,0 +1,25 @@
+FROM sunshinecloud007/sunshinecloud-universal-desktop
+# 容器运行时的用户名
+USER matrix0523
+ENV MAMBA_ROOT_PREFIX=/opt/micromamba
+# 设置相关目录权限和Git安全目录
+RUN sudo git config --global --add safe.directory /app/text-generation-webui && \
+    sudo git config --global --add safe.directory "*" && \
+    git config --global --add safe.directory /app/text-generation-webui && \
+    git config --global --add safe.directory "*" 
+# 设置text-generation-webui的micromamba依赖
+WORKDIR /app/text-generation-webui
+COPY environments/text-generation-webui.yml /tmp/environments/text-generation-webui.yml 
+RUN micromamba config set channel_priority disabled && micromamba env update -n base -f /tmp/environments/text-generation-webui.yml 
+SHELL ["micromamba", "run", "-n", "base", "/usr/bin/bash", "-c"]
+RUN pip install uv --no-cache-dir
+RUN uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126 --no-cache-dir
+RUN uv pip install -r requirements/full/requirements.txt --no-cache-dir 
+# 容器其他设置
+RUN sudo mkdir -p /run/systemd
+ADD config/* /etc/supervisor/conf.d/
+RUN sudo chmod -R 755 /app && \
+    sudo chown -R matrix0523:matrix0523 /app
+STOPSIGNAL SIGRTMIN+3
+ENTRYPOINT [ "/usr/bin/bash", "-c" ]
+CMD [ "sudo /usr/local/share/docker-init.sh bash -c 'sudo service supervisor start && sudo service dbus start && bash'" ]

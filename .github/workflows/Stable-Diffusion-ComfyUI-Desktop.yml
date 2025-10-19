@@ -1,10 +1,10 @@
-name: Install Applications
+name: Stable-Diffusion-WebUI-Desktop
 on:
   # push:
   #   branches:
-  #     - main
+  #     - main  
   workflow_run:
-    workflows: ["Compress Step 1 Image"]
+    workflows: ["Install Applications"]
     types:
       - completed
     branches:
@@ -12,7 +12,7 @@ on:
   workflow_dispatch: # Allow manual triggering
 
 jobs:
-  Install-Applications:
+  Build-SDWEBUI-Desktop:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout repository
@@ -47,7 +47,7 @@ jobs:
           uses: actions/setup-node@v4
           with:
             node-version: lts/*
-        - run: sudo npm install -g @devcontainers/cli && sudo mkdir -vp /mnt/cache && sudo chmod 777 -R /mnt/cache
+        - run: sudo npm install -g @devcontainers/cli
 
         - name: Login to Docker Hub
           uses: docker/login-action@v3
@@ -59,10 +59,10 @@ jobs:
         - name: Build and push
           uses: docker/build-push-action@v6
           with:
-            context: ./Install-Application/
+            context: ./Stable-Diffusion-ComfyUI-Desktop/
             platforms: linux/amd64
             push: true
             load: false
             tags: |
-              sunshinecloud007/sunshinecloud-universal-desktop:latest
-              sunshinecloud007/sunshinecloud-universal-desktop:latest-${{ github.sha }}
+              sunshinecloud007/sunshinecloud-stable-diffusion-comfyui-desktop:latest
+              sunshinecloud007/sunshinecloud-stable-diffusion-comfyui-desktop:latest-${{ github.sha }}

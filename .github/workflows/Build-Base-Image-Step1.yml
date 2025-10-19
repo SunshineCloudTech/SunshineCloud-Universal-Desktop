@@ -70,7 +70,7 @@ jobs:
           uses: devcontainers/ci@v0.3
           with:
             imageName: sunshinecloud007/sunshinecloud-universal-desktop
-            imageTag: build-layer
+            imageTag: base
             noCache: true
             push: always
 

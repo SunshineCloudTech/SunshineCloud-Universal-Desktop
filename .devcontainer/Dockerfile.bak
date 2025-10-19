@@ -443,4 +443,4 @@ RUN chmod 755 /home/matrix0523/.config /home/matrix0523/.vnc
 RUN echo "# Please Use Vncpasswd to set the password,Then run the command below" >> /home/matrix0523/.bashrc
 RUN echo "# vncserver :0 -geometry 1920x1080 -depth 24 -interface 127.0.0.1 -PasswordFile=/home/matrix0523/.vnc/passwd -xstartup startxfce4 -verbose" >> /home/matrix0523/.bashrc
 ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["sudo /usr/local/share/docker-init.sh bash -c 'sudo service supervisor start && sudo service dbus restart && sudo service xrdp start && bash'"]
+# CMD ["sudo /usr/local/share/docker-init.sh bash -c 'sudo service supervisor start && sudo service dbus restart && sudo service xrdp start && bash'"]

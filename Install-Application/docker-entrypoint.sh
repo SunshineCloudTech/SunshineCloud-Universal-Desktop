@@ -8,9 +8,9 @@ set -e
 echo "Starting SunshineCloud Universal Desktop container..."
 
 # Set environment variables for services
-export HOME=/root
-export USER=root
-export SHELL=/bin/bash
+export HOME=/home/matrix0523
+export USER=matrix0523
+export SHELL=/usr/bin/bash
 export TERM=xterm
 
 # Function to log messages with timestamp

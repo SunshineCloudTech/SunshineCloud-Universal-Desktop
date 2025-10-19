@@ -1,0 +1,17 @@
+# conda env update -n base -f 
+name: ComfyUI
+channels: 
+  - pytorch
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip=24.0
+  - cuda=12.6
+  - pytorch
+  - cudnn=9.3.0.75
+  - torchvision
+  - torchaudio
+  - jupyterlab
+  - jupyterlab-language-pack-zh-CN
+  - ffmpeg
