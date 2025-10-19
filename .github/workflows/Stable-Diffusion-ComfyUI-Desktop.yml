@@ -1,4 +1,4 @@
-name: Stable-Diffusion-WebUI-Desktop
+name: Stable-Diffusion-ComfyUI-Desktop
 on:
   # push:
   #   branches:
