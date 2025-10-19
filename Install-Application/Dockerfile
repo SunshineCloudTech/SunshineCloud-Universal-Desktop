@@ -1,4 +1,4 @@
-FROM sunshinecloud007/sunshinecloud-universal-desktop:base
+FROM sunshinecloud007/sunshinecloud-universal-desktop:step1
 # ============================================================================
 # MySQL 8.0.43 源码编译 Dockerfile
 # ============================================================================
