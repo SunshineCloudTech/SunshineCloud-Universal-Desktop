@@ -46,10 +46,10 @@ ENV MYSQL_USER=mysql
 ENV MYSQL_GROUP=mysql
 
 # MySQL 用户 UID (用户ID)
-ENV MYSQL_UID=999
+ENV MYSQL_UID=1999
 
 # MySQL 组 GID (组ID)
-ENV MYSQL_GID=999
+ENV MYSQL_GID=1999
 
 # ============================================================================
 # MySQL 目录路径配置
