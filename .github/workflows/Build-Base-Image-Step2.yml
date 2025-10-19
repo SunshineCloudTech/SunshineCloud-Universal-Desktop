@@ -1,4 +1,4 @@
-name: Install Applications
+name: Build Image Step 2
 on:
   # push:
   #   branches:
@@ -64,8 +64,8 @@ jobs:
             push: true
             load: false
             tags: |
-              sunshinecloud007/sunshinecloud-universal-desktop:latest
-              sunshinecloud007/sunshinecloud-universal-desktop:latest-${{ github.sha }}
+              sunshinecloud007/sunshinecloud-universal-desktop:step2
+              sunshinecloud007/sunshinecloud-universal-desktop:step2-${{ github.sha }}
 
         - name: Print Disk Usage
           run: |
