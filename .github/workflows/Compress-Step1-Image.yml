@@ -90,3 +90,7 @@ jobs:
         - name: Push Docker Image
           run: |
             docker push sunshinecloud007/sunshinecloud-universal-desktop:step1
+
+        - name: Print Disk Usage
+          run: |
+            df -h  

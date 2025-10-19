@@ -1,4 +1,4 @@
-# FROM sunshinecloud007/sunshinecloud-universal-desktop:base
+FROM sunshinecloud007/sunshinecloud-universal-desktop:base
 # ============================================================================
 # MySQL 8.0.43 源码编译 Dockerfile
 # ============================================================================
@@ -10,8 +10,8 @@
 # ============================================================================
 
 # 基础镜像参数，使用 Debian Bookworm
-ARG VARIANT="bookworm"
-FROM buildpack-deps:${VARIANT}-curl
+# ARG VARIANT="bookworm"
+# FROM buildpack-deps:${VARIANT}-curl
 
 # ============================================================================
 # 系统环境配置

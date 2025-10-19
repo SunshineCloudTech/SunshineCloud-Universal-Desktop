@@ -66,3 +66,7 @@ jobs:
             tags: |
               sunshinecloud007/sunshinecloud-stable-diffusion-comfyui-desktop:latest
               sunshinecloud007/sunshinecloud-stable-diffusion-comfyui-desktop:latest-${{ github.sha }}
+
+        - name: Print Disk Usage
+          run: |
+            df -h  
