@@ -667,5 +667,5 @@ WORKDIR /home/matrix0523
 # 暴露 MySQL 和 Redis 端口
 EXPOSE 3306 6379 3389 22
 EXPOSE 3306/udp 6379/udp 3389/udp 22/udp
-ENTRYPOINT ["/bin/bash", "-c"]
+ENTRYPOINT ["/usr/bin/bash", "-c"]
 # CMD ["sudo /usr/local/share/ssh-init.sh && sudo /usr/local/share/docker-init.sh bash -c 'sudo service supervisor start && sudo service dbus restart && sudo service xrdp start && bash'"]

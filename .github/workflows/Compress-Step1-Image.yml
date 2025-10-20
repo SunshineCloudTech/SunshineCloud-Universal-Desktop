@@ -80,7 +80,7 @@ jobs:
             echo "Committing container with new ENTRYPOINT and CMD..."
             docker commit \
               --change='USER matrix0523' \
-              --change='ENTRYPOINT ["/bin/bash", "-c"]' \
+              --change='ENTRYPOINT ["/usr/bin/bash", "-c"]' \
               --change='CMD ["sudo /usr/local/share/docker-init.sh bash -c '\''sudo service supervisor start && sudo service dbus restart && sudo service xrdp start && bash'\''"]' \
               $docker_tmp_name $src_image_name
             rm $docker_tmp_name.tar

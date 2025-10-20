@@ -36,3 +36,5 @@ ADD config/* /etc/supervisor/conf.d/
 RUN sudo chmod -R 755 /app && \
     sudo chown -R matrix0523:matrix0523 /app
 STOPSIGNAL SIGRTMIN+3
+ENTRYPOINT ["/usr/bin/bash", "-c"]
+CMD ["/usr/local/bin/docker-entrypoint.sh"]

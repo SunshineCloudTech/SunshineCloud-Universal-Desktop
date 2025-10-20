@@ -819,5 +819,5 @@ WORKDIR /home/matrix0523
 EXPOSE 3306 6379 3389 22
 EXPOSE 3306/udp 6379/udp 3389/udp 22/udp
 
-ENTRYPOINT ["/bin/bash", "-c"]
+ENTRYPOINT ["/usr/bin/bash", "-c"]
 CMD ["/usr/local/bin/docker-entrypoint.sh"]

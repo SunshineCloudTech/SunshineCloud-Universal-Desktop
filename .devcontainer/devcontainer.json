@@ -165,6 +165,16 @@
             "version": "latest"                   // Go 最新版本
         },
         
+        // NVIDIA CUDA：GPU 计算和机器学习支持
+        "ghcr.io/devcontainers/features/nvidia-cuda:2": {
+            "installCudnn": true,                 // 安装 CUDA Deep Neural Network (cuDNN) 库
+            "installCudnnDev": true,              // 安装 cuDNN 开发库和头文件  
+            "installNvtx": true,                  // 安装 NVIDIA Tools Extension (NVTX)
+            "installToolkit": true,               // 安装 NVIDIA CUDA Toolkit
+            "cudaVersion": "12.6",                // CUDA 版本（兼容性好）
+            "cudnnVersion": "9.3.0.75"           // cuDNN 版本（自动选择最适合的版本）
+        },
+        
         // 自定义功能特性（本地开发）
         "./features/nvs": "latest",              // Node Version Switcher
         "./features/machine-learning-packages": "latest", // 机器学习包集合
@@ -190,6 +200,7 @@
     "overrideFeatureInstallOrder": [
         "ghcr.io/devcontainers/features/common-utils",     // 基础系统工具
         "ghcr.io/devcontainers/features/git",              // Git 版本控制
+        "ghcr.io/devcontainers/features/nvidia-cuda",      // NVIDIA CUDA 支持
         "ghcr.io/devcontainers/features/dotnet",           // .NET 环境
         "ghcr.io/devcontainers/features/hugo",             // Hugo 静态网站生成器
         "ghcr.io/devcontainers/features/node",             // Node.js 环境

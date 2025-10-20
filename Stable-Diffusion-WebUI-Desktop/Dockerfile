@@ -38,5 +38,5 @@ ADD config/* /etc/supervisor/conf.d/
 RUN sudo chmod -R 755 /app && \
     sudo chown -R matrix0523:matrix0523 /app
 STOPSIGNAL SIGRTMIN+3
-ENTRYPOINT [ "/usr/bin/bash", "-c" ]
-CMD [ "sudo /usr/local/share/docker-init.sh bash -c 'sudo service supervisor start && sudo service dbus start && bash'" ]
+ENTRYPOINT ["/usr/bin/bash", "-c"]
+CMD ["/usr/local/bin/docker-entrypoint.sh"]
