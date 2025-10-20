@@ -7,7 +7,6 @@
 #   - 配置多种编程语言的用户目录结构
 #   - 建立工具链之间的符号链接
 #   - 设置正确的文件权限和用户组
-#   - 集成 Microsoft Oryx 构建工具
 #   - 优化 GitHub Codespaces 兼容性
 #
 # 配置的开发环境：
@@ -89,8 +88,6 @@ echo "配置 Python 环境..."
 PYTHON_PATH="/home/${USERNAME}/.python/current"
 mkdir -p /home/${USERNAME}/.python
 ln -snf /usr/local/python/current $PYTHON_PATH
-# 为 Oryx 创建 Python 系统链接
-ln -snf /usr/local/python /opt/python 2>/dev/null || echo "Python 系统链接已存在"
 echo "✓ Python 环境链接: $PYTHON_PATH"
 
 echo "配置 Java 环境 (SDKMAN)..."
@@ -120,13 +117,6 @@ chmod -R g+r+w /usr/share/dotnet          # 递归设置组读写权限
 
 # 创建用户 .NET 目录链接
 ln -snf /usr/share/dotnet $DOTNET_PATH
-
-# 为 Oryx 创建 .NET LTS 版本副本
-echo "配置 .NET LTS 版本..."
-mkdir -p /opt/dotnet/lts
-cp -R /usr/share/dotnet/dotnet /opt/dotnet/lts 2>/dev/null || echo ".NET 运行时已存在"
-cp -R /usr/share/dotnet/LICENSE.txt /opt/dotnet/lts 2>/dev/null || echo "许可证文件已存在"
-cp -R /usr/share/dotnet/ThirdPartyNotices.txt /opt/dotnet/lts 2>/dev/null || echo "第三方声明已存在"
 echo "✓ .NET 环境链接: $DOTNET_PATH"
 
 echo "配置 Maven 环境..."
@@ -152,14 +142,16 @@ echo "配置用户主目录权限..."
 HOME_DIR="/home/${USERNAME}/"
 chown -R ${USERNAME}:${USERNAME} ${HOME_DIR}
 chmod -R g+r+w "${HOME_DIR}"                    # 设置组读写权限
-find "${HOME_DIR}" -type d | xargs -n 1 chmod g+s  # 为目录设置组继承权限
+# 使用 find -exec 处理包含空格的目录名
+find "${HOME_DIR}" -type d -exec chmod g+s {} \; 2>/dev/null || echo "部分用户目录组继承权限设置跳过"
 
 echo "配置 /opt 目录权限..."
-# 设置 /opt 目录权限，允许 oryx 组管理
+# 设置 /opt 目录权限
 OPT_DIR="/opt/"
-chown -R ${USERNAME}:oryx ${OPT_DIR} 2>/dev/null || echo "Oryx 组可能不存在，跳过权限设置"
-chmod -R g+r+w "${OPT_DIR}"                     # 设置组读写权限
-find "${OPT_DIR}" -type d | xargs -n 1 chmod g+s   # 为目录设置组继承权限
+chown -R ${USERNAME}:${USERNAME} ${OPT_DIR} 2>/dev/null || echo "部分 /opt 目录权限设置跳过"
+chmod -R g+r+w "${OPT_DIR}" 2>/dev/null || echo "部分 /opt 目录权限设置跳过"
+# 使用 find -exec 处理包含空格的目录名，并添加错误处理
+find "${OPT_DIR}" -type d -exec chmod g+s {} \; 2>/dev/null || echo "部分 /opt 目录组继承权限设置跳过"
 
 echo ""
 echo "配置 sudo 安全路径..."

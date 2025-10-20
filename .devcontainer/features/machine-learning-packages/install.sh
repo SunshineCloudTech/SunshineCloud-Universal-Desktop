@@ -130,7 +130,7 @@ if [[ "$(python --version)" != "" ]] && [[ "$(pip --version)" != "" ]]; then
     echo "安装深度学习框架..."
     # PyTorch: 深度学习框架，使用 CPU 版本以减少容器大小
     # CPU 版本适合大多数开发和小规模训练场景
-    install_python_package "torch" "--index-url https://download.pytorch.org/whl/cpu"
+    # install_python_package "torch" "--index-url https://download.pytorch.org/whl/cpu"
     
     echo "安装网络和可视化扩展包..."
     # Requests: HTTP 库，用于 API 调用和数据获取
@@ -145,7 +145,7 @@ if [[ "$(python --version)" != "" ]] && [[ "$(pip --version)" != "" ]]; then
     echo "  数据处理：Pandas"
     echo "  可视化：Matplotlib, Seaborn, Plotly"
     echo "  机器学习：Scikit-learn"
-    echo "  深度学习：PyTorch (CPU 版本)"
+    # echo "  深度学习：PyTorch (CPU 版本)"
     echo "  网络工具：Requests"
     echo ""
     echo "现在可以开始您的数据科学和机器学习项目了！"

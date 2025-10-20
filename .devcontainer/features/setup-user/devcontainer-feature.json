@@ -12,7 +12,6 @@
         "HUGO_ROOT": "/home/matrix0523/.hugo",
         "DOTNET_SKIP_FIRST_TIME_EXPERIENCE": "1",
         "NUGET_XMLDOC_MODE": "skip",
-        "ORYX_ENV_TYPE": "vsonline-present",
         "PYTHONIOENCODING": "UTF-8",
         "NPM_GLOBAL": "/home/matrix0523/.npm-global",
         "NVS_HOME": "/home/matrix0523/.nvs",
