@@ -56,16 +56,29 @@ jobs:
             username: ${{ secrets.DOCKER_USERNAME }}
             password: ${{ secrets.DOCKER_PASSWORD }}
 
-        - name: Build and push
-          uses: docker/build-push-action@v6
+        # - name: Build and push
+        #   uses: docker/build-push-action@v6
+        #   with:
+        #     context: ./Install-Application/
+        #     platforms: linux/amd64
+        #     push: true
+        #     load: false
+        #     tags: |
+        #       sunshinecloud007/sunshinecloud-universal-desktop:step2
+        #       sunshinecloud007/sunshinecloud-universal-desktop:step2-${{ github.sha }}
+        - name: Build Image and Push
+          uses: devcontainers/ci@v0.3
           with:
-            context: ./Install-Application/
-            platforms: linux/amd64
-            push: true
-            load: false
-            tags: |
-              sunshinecloud007/sunshinecloud-universal-desktop:step2
-              sunshinecloud007/sunshinecloud-universal-desktop:step2-${{ github.sha }}
+            imageName: sunshinecloud007/sunshinecloud-universal-desktop
+            subFolder: ./Install-Application/
+            imageTag: step2
+            noCache: true
+            push: always
+
+        - name: Tag and Push 
+          run: |
+            docker tag sunshinecloud007/sunshinecloud-universal-desktop:step2 sunshinecloud007/sunshinecloud-universal-desktop:step2-${{ github.sha }}
+            docker push sunshinecloud007/sunshinecloud-universal-desktop:step2-${{ github.sha }}
 
         - name: Print Disk Usage
           run: |

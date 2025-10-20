@@ -1,0 +1,82 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/java
+{
+	"name": "SunshineCloud-Universal-Desktop-Install-Application",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	// "image": "sunshinecloud007/base-bookworm:lite",
+	// Use 'dockerComposeFile' to specify a Docker Compose file. More info: https://aka.ms/devcontainers-docker-compose
+	// "dockerComposeFile": "../docker-compose.yml",
+	// "service": " SunshineCloud-Universal-Desktop",
+    /*
+     * SunshineCloud 通用开发容器配置文件
+     * 
+     * 这是一个功能完整的 DevContainer 配置，提供多语言开发环境
+     * 包含以下主要功能：
+     * 1. 多语言运行时支持（Python、Node.js、Java、Go、Ruby、PHP、.NET）
+     * 2. 容器化开发工具（Docker、Kubernetes）
+     * 3. 版本控制工具（Git、Git LFS、GitHub CLI）
+     * 4. 机器学习和数据科学工具包
+     * 5. Web 开发工具（Hugo、Jekyll）
+     * 6. 终端和 Shell 增强
+     * 
+     * 适用场景：
+     * - 全栈 Web 开发
+     * - 机器学习和数据科学项目
+     * - DevOps 和云原生开发
+     * - 多语言项目开发
+     * 
+     * 维护者: SunshineCloud Team
+     * 版本: 2024 Universal Edition
+     */
+    
+    // 构建配置：指定 Dockerfile 和构建上下文
+    "build": {
+        "dockerfile": "./Dockerfile",     // Dockerfile 路径
+        "context": "."                   // 构建上下文（当前目录）
+    },
+    
+    // 功能特性配置：定义要安装的开发工具和运行时环境
+    "features": {
+        // 通用工具：基础系统工具和 Shell 配置
+        // NVIDIA CUDA：GPU 计算和机器学习支持
+        "ghcr.io/devcontainers/features/nvidia-cuda:2": {
+            "installCudnn": true,                 // 安装 CUDA Deep Neural Network (cuDNN) 库
+            "installCudnnDev": true,              // 安装 cuDNN 开发库和头文件  
+            "installNvtx": true,                  // 安装 NVIDIA Tools Extension (NVTX)
+            "installToolkit": true,               // 安装 NVIDIA CUDA Toolkit
+            "cudaVersion": "12.6",                // CUDA 版本（兼容性好）
+            "cudnnVersion": "9.3.0.75"           // cuDNN 版本（自动选择最适合的版本）
+        }
+    },
+    /*
+     * 功能安装顺序控制
+     * 
+     * 指定各个功能特性的安装顺序，确保依赖关系正确
+     * 基础工具优先安装，语言运行时其次，开发工具最后
+     * 这个顺序经过优化，避免安装冲突和依赖问题
+     */    
+    // 容器用户配置
+    "remoteUser": "matrix0523",      // 远程连接用户名
+    "containerUser": "matrix0523",   // 容器内用户名	
+	"containerEnv": {
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/local/share/nvm:/sbin:/bin:/usr/sbin:/usr/bin:${PATH}"
+    },
+	"workspaceMount": "source=${localWorkspaceFolder},target=/SunshineCloud/SunshineCloud-Universal-Desktop-Git,type=bind,consistency=cached",
+	"workspaceFolder": "/SunshineCloud/SunshineCloud-Universal-Desktop-Git",
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "sudo /usr/local/share/docker-init.sh bash -c 'sudo service supervisor start && sudo service dbus restart && sudo service xrdp start'",
+
+	// Configure tool-specific properties.
+	"customizations": {
+		"codespaces": {
+			// "openFiles": [
+			// 	"/SunshineCloud/SunshineCloud-Universal-Desktop-Git/README.md"
+			// ]
+		}
+	}
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+}
