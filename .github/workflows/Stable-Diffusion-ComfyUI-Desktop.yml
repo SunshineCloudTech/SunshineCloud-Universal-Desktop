@@ -4,7 +4,7 @@ on:
   #   branches:
   #     - main  
   workflow_run:
-    workflows: ["Install Applications"]
+    workflows: ["Compress Step 2 Image"]
     types:
       - completed
     branches:
