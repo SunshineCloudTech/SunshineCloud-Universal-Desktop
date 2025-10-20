@@ -2,6 +2,8 @@ FROM sunshinecloud007/sunshinecloud-universal-desktop
 # 容器运行时的用户名
 USER matrix0523
 ENV MAMBA_ROOT_PREFIX=/opt/micromamba
+WORKDIR /app
+RUN git clone https://github.com/lllyasviel/Fooocus.git /app/Fooocus
 # 设置相关目录权限和Git安全目录
 RUN sudo git config --global --add safe.directory /app/Fooocus && \
     sudo git config --global --add safe.directory "*" && \
@@ -14,8 +16,8 @@ COPY environments/Fooocus.yml /tmp/environments/Fooocus.yml
 RUN micromamba config set channel_priority disabled && micromamba env update -n base -f /tmp/environments/Fooocus.yml
 SHELL ["micromamba", "run", "-n", "base", "/usr/bin/bash", "-c"]
 RUN pip install uv --no-cache-dir
-RUN uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126 --no-cache-dir
-RUN uv pip install -r requirements_versions.txt --no-cache-dir 
+RUN uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126 --no-cache-dir --system
+RUN uv pip install -r requirements_versions.txt --no-cache-dir --system
 # 容器其他设置
 RUN sudo mkdir -p /run/systemd
 ADD config/* /etc/supervisor/conf.d/
