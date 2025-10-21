@@ -1,10 +1,10 @@
-name: Compress Step 2 Image
+name: Compress Step 3 Image
 on:
   # push:
   #   branches:
   #     - main  
   workflow_run:
-    workflows: ["Build Image Step 2"]
+    workflows: ["Build Image Step 3"]
     types:
       - completed
     branches:
@@ -12,7 +12,7 @@ on:
   workflow_dispatch: # Allow manual triggering
 
 jobs:
-  Compress-Step2-Image:
+  Compress-Step3-Image:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout repository
@@ -63,7 +63,7 @@ jobs:
 
         - name: Merge Docker Image
           run: |
-            export src_image_name=sunshinecloud007/sunshinecloud-universal-desktop:step2
+            export src_image_name=sunshinecloud007/sunshinecloud-universal-desktop:step4
             export docker_tmp_name=temp1
             echo "Creating temporary container from image..."
             docker create -it -P --name $docker_tmp_name $src_image_name
@@ -80,18 +80,19 @@ jobs:
             echo "Committing container with new ENTRYPOINT and CMD..."
             docker commit \
               --change='USER matrix0523' \
+              --change='WORKDIR /home/matrix0523' \
               --change='ENTRYPOINT ["/usr/bin/bash", "-c"]' \
               --change='CMD ["/usr/local/bin/docker-entrypoint.sh"]' \
               $docker_tmp_name $src_image_name
             rm $docker_tmp_name.tar
             docker images $src_image_name
-            docker tag $src_image_name sunshinecloud007/sunshinecloud-universal-desktop:step3
-            docker tag $src_image_name sunshinecloud007/sunshinecloud-universal-desktop:step3-${{ github.sha }}
+            docker tag $src_image_name sunshinecloud007/sunshinecloud-universal-desktop:latest
+            docker tag $src_image_name sunshinecloud007/sunshinecloud-universal-desktop:latest-${{ github.sha }}
 
         - name: Push Docker Image
           run: |
-            docker push sunshinecloud007/sunshinecloud-universal-desktop:step3
-            docker push sunshinecloud007/sunshinecloud-universal-desktop:step3-${{ github.sha }}
+            docker push sunshinecloud007/sunshinecloud-universal-desktop:latest
+            docker push sunshinecloud007/sunshinecloud-universal-desktop:latest-${{ github.sha }}
 
         - name: Print Disk Usage
           run: |

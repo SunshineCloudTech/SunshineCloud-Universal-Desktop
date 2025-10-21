@@ -3,7 +3,7 @@
 {
 	"name": "SunshineCloud-Universal-Desktop-Install-Application",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	// "image": "sunshinecloud007/base-bookworm:lite",
+	"image": "sunshinecloud007/sunshinecloud-universal-desktop:step3",
 	// Use 'dockerComposeFile' to specify a Docker Compose file. More info: https://aka.ms/devcontainers-docker-compose
 	// "dockerComposeFile": "../docker-compose.yml",
 	// "service": " SunshineCloud-Universal-Desktop",
@@ -30,10 +30,10 @@
      */
     
     // 构建配置：指定 Dockerfile 和构建上下文
-    "build": {
-        "dockerfile": "./Dockerfile",     // Dockerfile 路径
-        "context": "."                   // 构建上下文（当前目录）
-    },
+    // "build": {
+    //     "dockerfile": "./Dockerfile",     // Dockerfile 路径
+    //     "context": "."                   // 构建上下文（当前目录）
+    // },
     
     // 功能特性配置：定义要安装的开发工具和运行时环境
     "features": {

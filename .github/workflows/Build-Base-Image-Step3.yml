@@ -1,10 +1,10 @@
-name: Build Image Step 2
+name: Build Image Step 3
 on:
   # push:
   #   branches:
   #     - main
   workflow_run:
-    workflows: ["Compress Step 1 Image"]
+    workflows: ["Compress Step 2 Image"]
     types:
       - completed
     branches:
@@ -12,7 +12,7 @@ on:
   workflow_dispatch: # Allow manual triggering
 
 jobs:
-  Build-Base-Image-Step2:
+  Build-Base-Image-Step3:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout repository
@@ -56,28 +56,28 @@ jobs:
             username: ${{ secrets.DOCKER_USERNAME }}
             password: ${{ secrets.DOCKER_PASSWORD }}
 
-        - name: Build and push
-          uses: docker/build-push-action@v6
-          with:
-            context: ./Install-Application/
-            platforms: linux/amd64
-            push: true
-            load: false
-            tags: |
-              sunshinecloud007/sunshinecloud-universal-desktop:step2
-              sunshinecloud007/sunshinecloud-universal-desktop:step2-${{ github.sha }}
-        # - name: Build Image and Push
-        #   uses: devcontainers/ci@v0.3
+        # - name: Build and push
+        #   uses: docker/build-push-action@v6
         #   with:
-        #     imageName: sunshinecloud007/sunshinecloud-universal-desktop
-        #     subFolder: ./Install-Application/
-        #     imageTag: step2
-        #     noCache: true
-        #     push: always
+        #     context: ./Install-Application/
+        #     platforms: linux/amd64
+        #     push: true
+        #     load: false
+        #     tags: |
+        #       sunshinecloud007/sunshinecloud-universal-desktop:step2
+        #       sunshinecloud007/sunshinecloud-universal-desktop:step2-${{ github.sha }}
+        - name: Build Image and Push
+          uses: devcontainers/ci@v0.3
+          with:
+            imageName: sunshinecloud007/sunshinecloud-universal-desktop
+            subFolder: ./Install-Application/
+            imageTag: step4
+            noCache: true
+            push: always
 
         # - name: Tag and Push 
         #   run: |
-        #     docker tag sunshinecloud007/sunshinecloud-universal-desktop:step2 sunshinecloud007/sunshinecloud-universal-desktop:step2-${{ github.sha }}
+        #     docker tag sunshinecloud007/sunshinecloud-universal-desktop:step2 sunshinecloud007/sunshinecloud-universal-desktop:step4-${{ github.sha }}
         #     docker push sunshinecloud007/sunshinecloud-universal-desktop:step2-${{ github.sha }}
 
         - name: Print Disk Usage
