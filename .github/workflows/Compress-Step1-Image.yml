@@ -59,6 +59,7 @@ jobs:
         - name: Build Base Image
           run: |
             docker pull sunshinecloud007/sunshinecloud-universal-desktop:base
+            docker images sunshinecloud007/sunshinecloud-universal-desktop:base
             df -h
 
         - name: Merge Docker Image
@@ -89,6 +90,7 @@ jobs:
 
         - name: Push Docker Image
           run: |
+            docker images sunshinecloud007/sunshinecloud-universal-desktop:step1
             docker push sunshinecloud007/sunshinecloud-universal-desktop:step1
 
         - name: Print Disk Usage

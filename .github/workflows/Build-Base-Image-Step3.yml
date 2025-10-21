@@ -56,29 +56,29 @@ jobs:
             username: ${{ secrets.DOCKER_USERNAME }}
             password: ${{ secrets.DOCKER_PASSWORD }}
 
-        # - name: Build and push
-        #   uses: docker/build-push-action@v6
-        #   with:
-        #     context: ./Install-Application/
-        #     platforms: linux/amd64
-        #     push: true
-        #     load: false
-        #     tags: |
-        #       sunshinecloud007/sunshinecloud-universal-desktop:step2
-        #       sunshinecloud007/sunshinecloud-universal-desktop:step2-${{ github.sha }}
-        - name: Build Image and Push
-          uses: devcontainers/ci@v0.3
+        - name: Build and push
+          uses: docker/build-push-action@v6
           with:
-            imageName: sunshinecloud007/sunshinecloud-universal-desktop
-            subFolder: ./Install-Application/
-            imageTag: step4
-            noCache: true
-            push: always
+            context: ./Install-Cuda/
+            platforms: linux/amd64
+            push: true
+            load: false
+            tags: |
+              sunshinecloud007/sunshinecloud-universal-desktop:step4
+              sunshinecloud007/sunshinecloud-universal-desktop:step4-${{ github.sha }}
+        # - name: Build Image and Push
+        #   uses: devcontainers/ci@v0.3
+        #   with:
+        #     imageName: sunshinecloud007/sunshinecloud-universal-desktop
+        #     subFolder: ./Install-Application/
+        #     imageTag: latest
+        #     noCache: true
+        #     push: always
 
         # - name: Tag and Push 
         #   run: |
-        #     docker tag sunshinecloud007/sunshinecloud-universal-desktop:step2 sunshinecloud007/sunshinecloud-universal-desktop:step4-${{ github.sha }}
-        #     docker push sunshinecloud007/sunshinecloud-universal-desktop:step2-${{ github.sha }}
+        #     docker tag sunshinecloud007/sunshinecloud-universal-desktop:latest sunshinecloud007/sunshinecloud-universal-desktop:latest-${{ github.sha }}
+        #     docker push sunshinecloud007/sunshinecloud-universal-desktop:latest-${{ github.sha }}
 
         - name: Print Disk Usage
           run: |

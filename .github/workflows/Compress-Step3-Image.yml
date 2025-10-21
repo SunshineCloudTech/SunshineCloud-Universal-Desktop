@@ -58,7 +58,8 @@ jobs:
 
         - name: Build Base Image
           run: |
-            docker pull sunshinecloud007/sunshinecloud-universal-desktop:step2
+            docker pull sunshinecloud007/sunshinecloud-universal-desktop:step4
+            docker images sunshinecloud007/sunshinecloud-universal-desktop:step4
             df -h
 
         - name: Merge Docker Image
@@ -91,6 +92,7 @@ jobs:
 
         - name: Push Docker Image
           run: |
+            docker images sunshinecloud007/sunshinecloud-universal-desktop:latest
             docker push sunshinecloud007/sunshinecloud-universal-desktop:latest
             docker push sunshinecloud007/sunshinecloud-universal-desktop:latest-${{ github.sha }}
 
