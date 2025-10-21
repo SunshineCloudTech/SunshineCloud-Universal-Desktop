@@ -1,5 +1,5 @@
 FROM sunshinecloud007/sunshinecloud-universal-desktop:step3
-
+USER root
 # 设置环境变量
 ENV DEBIAN_FRONTEND=noninteractive
 ENV CUDA_VERSION=12.6
