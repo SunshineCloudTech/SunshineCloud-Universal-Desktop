@@ -4,7 +4,7 @@ USER matrix0523
 ENV MAMBA_ROOT_PREFIX=/opt/micromamba
 ENV TORCH_GPU_SKIP_VERIFICATION=true
 ENV FORCE_REINSTALL=true
-ENV CUDA_VERSION=cu126
+ENV INSTALL_CUDA_VERSION=cu126
 WORKDIR /app
 RUN git clone https://github.com/lllyasviel/Fooocus.git /app/Fooocus
 WORKDIR /SunshineCloud/SunshineCloud-Universal-Utils/
