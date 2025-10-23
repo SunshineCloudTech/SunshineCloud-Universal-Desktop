@@ -2,6 +2,9 @@ FROM sunshinecloud007/sunshinecloud-universal-desktop
 # 容器运行时的用户名
 USER matrix0523
 ENV MAMBA_ROOT_PREFIX=/opt/micromamba
+ENV TORCH_GPU_SKIP_VERIFICATION=true
+ENV FORCE_REINSTALL=true
+ENV CUDA_VERSION=cu126
 WORKDIR /app
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git /app/ComfyUI
 WORKDIR /SunshineCloud/SunshineCloud-Universal-Utils/
