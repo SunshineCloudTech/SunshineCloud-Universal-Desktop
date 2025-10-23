@@ -164,7 +164,11 @@ RUN useradd -m "Administrator" -s /bin/bash && \
     useradd -r -s /bin/false -U -m -d /usr/share/ollama ollama && \
     usermod -a -G ollama root && \
     usermod -a -G ollama Administrator && \
-    usermod -a -G ollama matrix0523
+    usermod -a -G ollama matrix0523 && \
+    # Setup Ollama directories and permissions
+    sudo mkdir -p /var/lib/ollama/models && \
+    sudo chown -R ollama:ollama /var/lib/ollama && \
+    sudo chmod -R 755 /var/lib/ollama
 
 # Configure user locale settings
 RUN echo "# Locale settings for Chinese/English support" >> /home/matrix0523/.bashrc && \

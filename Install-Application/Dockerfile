@@ -754,6 +754,12 @@ RUN echo "Installing Visual Studio Code..." && \
     rm -rf /var/lib/apt/lists/* && \
     echo "Visual Studio Code installation completed"
 RUN curl -fsSL https://ollama.com/install.sh | sh
+
+# Setup Ollama directories and permissions
+RUN sudo mkdir -p /var/lib/ollama/models && \
+    sudo chown -R ollama:ollama /var/lib/ollama && \
+    sudo chmod -R 755 /var/lib/ollama
+
 # 设置 MySQL root 用户默认密码
 RUN echo "配置 MySQL 默认密码..." && \
     # 临时启动 MySQL 服务器
