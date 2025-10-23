@@ -2,8 +2,13 @@ FROM sunshinecloud007/sunshinecloud-universal-desktop
 # 容器运行时的用户名
 USER matrix0523
 ENV MAMBA_ROOT_PREFIX=/opt/micromamba
+ENV TORCH_GPU_SKIP_VERIFICATION=true
+ENV FORCE_REINSTALL=true
+ENV CUDA_VERSION=cu126
 WORKDIR /app
 RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git /app/stable-diffusion-webui
+WORKDIR /SunshineCloud/SunshineCloud-Universal-Utils/
+RUN git pull --rebase
 # 设置相关目录权限和Git安全目录
 RUN sudo git config --global --add safe.directory /app/stable-diffusion-webui && \
     sudo git config --global --add safe.directory "*" && \
@@ -29,7 +34,8 @@ COPY environments/stable-diffusion-webui.yml /tmp/environments/stable-diffusion-
 RUN micromamba config set channel_priority disabled && micromamba env update -n base -f /tmp/environments/stable-diffusion-webui.yml
 SHELL ["micromamba", "run", "-n", "base", "/usr/bin/bash", "-c"]
 RUN pip install uv --no-cache-dir
-RUN uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126 --no-cache-dir --system
+# RUN uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126 --no-cache-dir --system
+RUN bash /SunshineCloud/SunshineCloud-Universal-Utils/Torch-Install-GPU/Torch-Install-GPU.sh
 RUN uv pip install -r requirements_versions.txt --no-cache-dir --system
 RUN uv pip install pyarrow==20.0.0 --no-cache-dir --system
 # 容器其他设置
