@@ -1,51 +1,41 @@
-## Version number specification
+# Micromamba DevContainer Feature Notes
 
-Soft version matching is *not* supported, meaning that `"1"` and `"1.0"` are not
-valid values of the `version` parameter. The full version number must be specified
-like `"1.0.0"`.
+## Integration with SunshineCloud Universal Desktop
 
-## Channels
+This micromamba feature is specifically configured for use with the SunshineCloud Universal Desktop environment, providing conda package management for AI/ML and data science workflows.
 
-By default, `micromamba` configures no channels. If you would like to set `conda-forge`
-as a default channel, then use
+## Key Features
 
-```json
-"features": {
-  "ghcr.io/mamba-org/devcontainer-features/micromamba:1": {
-    "channels": "conda-forge"
-  }
-}
-```
+### Fast Package Management
+- Micromamba provides faster package resolution and installation compared to standard conda
+- Optimized for container environments
+- Minimal memory footprint
 
-More generally, `channels` can be a space-separated list such as "conda-forge defaults".
+### Pre-configured Channels
+The feature is pre-configured with commonly used channels:
+- conda-forge (primary channel)
+- defaults (fallback)
 
-## Install packages with the `packages` option
+### AI/ML Package Support  
+Common packages available through this feature:
+- Python scientific stack (numpy, pandas, scipy)
+- Machine learning libraries (scikit-learn, tensorflow, pytorch)
+- Jupyter notebook ecosystem
+- Data visualization tools (matplotlib, seaborn, plotly)
 
-This Feature supports package installation during image build.
+## Usage in AI Desktop Environments
 
-Specify package names separated by **spaces** in the `packages` option.
+This feature is automatically included in all AI desktop environments:
+- ComfyUI Desktop
+- Fooocus Desktop  
+- WebUI Desktop
+- WebUI Forge Desktop
+- Text Generation Desktop
 
-For example, specify like the following installs `python>=3.11,<3.12` and `r-base`.
+## Environment Management
 
-```json
-"features": {
-  "ghcr.io/mamba-org/devcontainer-features/micromamba:1": {
-    "channels": "conda-forge",
-    "packages": "python>=3.11,<3.12 r-base"
-  }
-}
-```
-
-This option has only been tested with sufficiently new versions of micromamba
-and may not work if an older version is specified.
-
-## Create a new environment with the `envFile` option
-
-If a specfile (envfile) exists in the base image,
-we can create an environment and install packages at image build time
-by specifying the path to the specfile with the `envFile` option.
-
-For example, with the following Dockerfile...
+### Creating Environments
+Environments can be created using specification files or direct package lists.
 
 ```dockerfile
 FROM mcr.microsoft.com/devcontainers/base:debian
@@ -57,20 +47,43 @@ COPY specfile.yml /tmp/specfile.yml
 ```yml
 name: testenv
 channels:
+### Example AI/ML Environment
+```yaml
+name: ai-env
+channels:
   - conda-forge
+  - pytorch
 dependencies:
-  - python >=3.6,<3.7
+  - python=3.11
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=12.1
+  - transformers
+  - diffusers
+  - accelerate
+  - jupyter
+  - matplotlib
 ```
 
-Specify the path to the spec file in the container with the `envFile` option in `devcontainer.json`.
+## Performance Considerations
 
-```json
-"features": {
-  "micromamba": {
-    "envFile": "/tmp/specfile.yml"
-  }
-}
-```
+### Container Optimization
+- Micromamba is pre-installed during image build to reduce startup time
+- Common packages are cached in the base image
+- Environment activation is automatic
 
-Please check [the mamba user guide](https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html#specification-files)
-for more information about spec files.
+### GPU Support
+- CUDA-enabled packages are available through conda channels
+- PyTorch GPU builds are optimized for the container environment
+- Environment variables are pre-configured for GPU acceleration
+
+## Troubleshooting
+
+### Common Issues
+- Ensure version numbers are fully specified (X.Y.Z format)
+- Check channel availability for specific packages
+- Verify GPU drivers are available for CUDA packages
+
+### Integration Notes
+This feature works seamlessly with other SunshineCloud Universal Desktop features including GPU support, Ollama integration, and desktop environment components.

@@ -1,150 +1,125 @@
-# 📋 SunshineCloud Universal Desktop - 发行说明
+# SunshineCloud Universal Desktop - 发行说明
 
-## 🚀 版本信息
+## 版本信息
 
-### 当前版本: v2025.09-universal
+当前版本: v2025.10
+发布日期: 2025年10月25日
+Docker 镜像: sunshinecloud007/sunshinecloud-universal-desktop:latest
+基础系统: Debian 12 (Bookworm)
+架构支持: AMD64/x86_64
 
-**发布日期**: 2025年9月16日  
-**Docker 镜像**: `sunshinecloud007/sunshinecloud-universal-desktop:latest`  
-**基础系统**: Debian 12 (Bookworm)  
-**架构支持**: AMD64/x86_64  
+## 最新更新 (v2025.10)
 
----
+### 新增功能
 
-## 🆕 最新更新 (v2025.09-universal)
+#### AI/ML 桌面环境
+- 新增 Stable Diffusion ComfyUI 专门桌面环境
+- 新增 Stable Diffusion Fooocus 专门桌面环境
+- 新增 AUTOMATIC1111 WebUI 专门桌面环境
+- 新增 WebUI Forge 专门桌面环境
+- 新增 Text Generation WebUI 专门桌面环境
 
-### ✨ 新增功能
+#### GPU 支持优化
+- 完整的 NVIDIA CUDA 支持
+- PyTorch GPU 优化安装脚本
+- 专门的 GPU 环境变量配置
+- Ollama 大语言模型服务集成
 
-#### 🖥️ 桌面环境增强
-- **XFCE 4.18** 完整桌面环境集成
-- **XRDP 远程桌面支持** - 支持 Windows RDP 协议
-- **多语言字体包** - 全面支持中文、日文、韩文、阿拉伯文等
-- **自定义主题** - Adwaita 主题和图标美化
+#### 构建流程改进
+- 多阶段 Docker 镜像构建
+- 自动化的镜像压缩优化
+- GitHub Actions 持续集成
+- 分层构建策略以减小镜像体积
 
-#### 🔧 XFCE 面板插件
-- ✅ **系统托盘 (systray)** - 应用程序通知区域
-- ✅ **音频控制 (pulseaudio)** - 实时音量和设备管理
-- ✅ **天气显示 (weather)** - 支持全球城市天气信息
-- ✅ **CPU 图表 (cpugraph)** - 实时系统资源监控
+#### 桌面环境
+- XFCE 4.18 轻量级桌面环境
+- XRDP 远程桌面支持
+- 多语言字体和输入法支持
+- 音频系统完整支持
 
-#### 🎵 音频系统
-- **PulseAudio 完整支持** - 容器内音频播放
-- **XRDP 音频重定向** - 远程桌面音频传输
-- **动态音频设备检测** - 自动识别可用音频设备
+#### 开发工具
+- Python 3.10+ 开发环境
+- Node.js LTS JavaScript/TypeScript 支持
+- Java 多版本支持 (8, 11, 17, 21)
+- .NET 8.0 跨平台开发
+- Go 云原生开发支持
+- Ruby Web 框架支持
+- PHP Web 应用开发
 
-#### 💻 开发工具集成
-- **Python 3.10+** - 数据科学和 Web 开发
-- **Node.js LTS** - JavaScript/TypeScript 开发
-- **Java 8+** - 企业级应用开发 (Temurin JDK)
-- **.NET 8.0** - 跨平台应用开发
-- **Go Latest** - 云原生应用开发
-- **Ruby Latest** - Web 框架开发
-- **PHP Latest** - Web 应用开发
+#### 数据库服务
+- MySQL 8.0 关系型数据库
+- Redis 内存数据库
+- Supervisor 服务管理
 
-#### 🛠️ 构建工具
-- **Maven** - Java 项目管理
-- **Gradle** - 现代构建自动化
-- **Ant** - 传统 Java 构建工具
-- **Yarn/pnpm** - Node.js 包管理
-- **Composer** - PHP 依赖管理
+### 技术改进
 
-#### 🗄️ 数据库服务
-- **MySQL 8.0** 
-  - 端口: 3306 (TCP/UDP)
-  - 用户: root (无密码)
-  - 配置路径: `/etc/mysql/my.cnf`
-  - 数据目录: `/SunshineCloud/MySQL-Server`
-  
-- **Redis 7.0**
-  - 端口: 6379 (TCP/UDP)
-  - 配置路径: `/etc/redis/redis.conf`
-  - 持久化: RDB + AOF
+#### 容器优化
+- 多阶段构建减少镜像体积
+- 自动化镜像压缩流程
+- 优化的启动脚本和服务管理
+- 改进的依赖管理和包安装
 
-#### 🔄 服务管理
-- **Supervisor** 进程管理
-  - MySQL 自动启动和监控
-  - Redis 自动启动和监控
-  - 日志统一管理
-  - 服务状态监控
+#### 服务管理
+- Supervisor 统一服务管理
+- 自动启动和监控数据库服务
+- Ollama AI 模型服务集成
+- 统一的日志管理和查看
 
-### 🔧 技术改进
+#### 安全改进
+- 标准化用户权限配置
+- 优化的文件和目录权限设置
+- 安全的默认配置
+- 改进的网络安全配置
 
-#### 📦 容器优化
-- **分层构建优化** - 减少镜像体积
-- **镜像扁平化** - 通过 export/import 优化层数
-- **启动脚本改进** - 更可靠的服务启动序列
+### 问题修复
 
-#### 🌐 网络配置
-- **端口标准化** - 明确定义服务端口
-- **防火墙兼容** - 优化容器网络配置
-- **代理支持** - 支持 HTTP/HTTPS 代理环境
+#### 包管理修复
+- 修复 uv pip install 缺少 --system 参数问题
+- 统一化所有 Dockerfile 的包安装方式
+- 修复文件权限错误（特别是包含空格的目录）
+- 移除 Microsoft Oryx 相关依赖
 
-#### 🔐 安全增强
-- **用户权限管理** - 标准化 sudo 配置
-- **SSH 安全配置** - 优化远程访问安全
-- **文件权限** - 正确的用户和组权限设置
+#### GPU 支持修复
+- 集成专门的 PyTorch GPU 安装脚本
+- 添加 GPU 优化环境变量
+- 修复 CUDA 相关权限问题
+- 优化 AI 模型加载和推理性能
 
-### 🐛 问题修复
+#### 服务配置修复
+- 统一所有项目的 Ollama supervisor 配置
+- 修复服务启动顺序和依赖关系
+- 改进服务监控和自动重启机制
+- 优化资源使用和内存管理
 
-#### 🔊 音频问题
-- ✅ 修复 PulseAudio XRDP 模块加载问题
-- ✅ 解决音频设备检测失败
-- ✅ 修复远程桌面音频延迟
+## 系统规格
 
-#### 🗄️ 数据库问题
-- ✅ 修复 MySQL CMake 构建错误
-- ✅ 解决权限和锁文件问题
-- ✅ 优化启动脚本和配置
+### 基础环境
+- 操作系统: Debian 12 (Bookworm)
+- 桌面环境: XFCE 4.18
+- 远程协议: XRDP (RDP)
+- 音频系统: PulseAudio
 
-#### 🖥️ 桌面问题
-- ✅ 修复字体渲染问题
-- ✅ 解决图标主题缺失
-- ✅ 优化面板插件配置
+### 网络端口
+- 3389: XRDP 远程桌面
+- 3306: MySQL 数据库
+- 6379: Redis 缓存
+- 22: SSH 远程访问
+- 11434: Ollama API 服务
 
-#### 📦 包管理问题
-- ✅ 移除不可用的软件包
-- ✅ 修复 Flatpak 安装和配置
-- ✅ 解决依赖冲突
+### 用户账户
+- matrix0523: 123456789 (主用户)
+- Administrator: 123456789 (管理员)
+- ollama: (AI 模型服务用户)
 
----
+### 重要目录
+- /app: 主工作目录
+- /var/lib/ollama: Ollama 模型存储
+- /home/matrix0523: 用户主目录
+- /var/log: 系统和服务日志
 
-## 📋 系统规格
+## 部署指南
 
-### 🖥️ 基础环境
-```
-操作系统: Debian 12 (Bookworm)
-桌面环境: XFCE 4.18
-远程协议: XRDP (RDP)
-音频系统: PulseAudio
-```
-
-### 🌐 网络端口
-```
-3389/tcp  - XRDP 远程桌面
-3306/tcp  - MySQL 数据库
-6379/tcp  - Redis 缓存
-22/tcp    - SSH 远程访问
-```
-
-### 👤 用户账户
-```
-matrix0523:    123456789 (主用户)
-Administrator: 123456789 (管理员)
-```
-
-### 📂 重要目录
-```
-/SunshineCloud/                     - 主工作目录
-/SunshineCloud/MySQL-Server/        - MySQL 安装目录
-/home/matrix0523/                   - 用户主目录
-/var/log/                          - 系统日志目录
-```
-
----
-
-## 🚀 部署指南
-
-### Docker 快速部署
+### 基础镜像部署
 
 ```bash
 # 基础运行
@@ -171,6 +146,49 @@ docker run -d \
 
 ### Docker Compose 部署
 
+```bash
+docker run -d \
+  --name sunshine-desktop \
+  -p 3389:3389 \
+  -p 3306:3306 \
+  -p 6379:6379 \
+  -p 22:22 \
+  --privileged \
+  -v /path/to/workspace:/app \
+  sunshinecloud007/sunshinecloud-universal-desktop:latest
+```
+
+### AI 专门桌面环境部署
+
+```bash
+# ComfyUI 环境
+docker run -d --gpus all \
+  --name comfyui-desktop \
+  -p 3389:3389 \
+  -p 8188:8188 \
+  --privileged \
+  sunshinecloud007/stable-diffusion-comfyui-desktop:latest
+
+# AUTOMATIC1111 WebUI 环境
+docker run -d --gpus all \
+  --name webui-desktop \
+  -p 3389:3389 \
+  -p 7860:7860 \
+  --privileged \
+  sunshinecloud007/stable-diffusion-webui-desktop:latest
+
+# 文本生成环境
+docker run -d --gpus all \
+  --name textgen-desktop \
+  -p 3389:3389 \
+  -p 7860:7860 \
+  -p 11434:11434 \
+  --privileged \
+  sunshinecloud007/text-generation-webui-desktop:latest
+```
+
+### Docker Compose 部署示例
+
 ```yaml
 version: '3.8'
 services:
@@ -181,247 +199,124 @@ services:
       - "3389:3389"
       - "3306:3306"
       - "6379:6379"
-      - "22:22"
     volumes:
-      - ./workspace:/SunshineCloud
-      - ./mysql-data:/var/lib/mysql
-      - ./redis-data:/var/lib/redis
-    environment:
-      - DISPLAY=:0
-      - MYSQL_ROOT_PASSWORD=secure_password
+      - ./workspace:/app
     privileged: true
     restart: unless-stopped
 ```
 
-### Kubernetes 部署
+## 配置说明
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: sunshine-desktop
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: sunshine-desktop
-  template:
-    metadata:
-      labels:
-        app: sunshine-desktop
-    spec:
-      containers:
-      - name: sunshine-desktop
-        image: sunshinecloud007/sunshinecloud-universal-desktop:latest
-        ports:
-        - containerPort: 3389
-        - containerPort: 3306
-        - containerPort: 6379
-        securityContext:
-          privileged: true
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: sunshine-desktop-service
-spec:
-  selector:
-    app: sunshine-desktop
-  ports:
-  - name: rdp
-    port: 3389
-    targetPort: 3389
-  - name: mysql
-    port: 3306
-    targetPort: 3306
-  - name: redis
-    port: 6379
-    targetPort: 6379
-  type: LoadBalancer
-```
+### 服务管理
 
----
-
-## 🔧 配置说明
-
-### 数据库配置
-
-#### MySQL 配置
 ```bash
-# 配置文件位置
-/etc/mysql/my.cnf
+# 查看所有服务状态
+sudo supervisorctl status
 
-# 重要配置项
-[mysqld]
-bind-address = 0.0.0.0
-port = 3306
-datadir = /SunshineCloud/MySQL-Server/data
-socket = /var/run/mysqld/mysqld.sock
-
-# 服务管理
-sudo supervisorctl status mysql
+# 管理数据库服务
 sudo supervisorctl restart mysql
-```
-
-#### Redis 配置
-```bash
-# 配置文件位置
-/etc/redis/redis.conf
-
-# 重要配置项
-bind 0.0.0.0
-port 6379
-save 900 1
-save 300 10
-save 60 10000
-
-# 服务管理
-sudo supervisorctl status redis-server
 sudo supervisorctl restart redis-server
+
+# 管理 AI 服务
+sudo supervisorctl restart ollama
+
+# 查看服务日志
+sudo supervisorctl tail -f mysql
+sudo supervisorctl tail -f ollama
 ```
 
-### 桌面配置
+### AI 模型配置
 
-#### XFCE 面板自定义
 ```bash
-# 面板配置文件
-~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml
+# Ollama 模型管理
+ollama list                    # 列出已安装模型
+ollama pull llama2            # 下载模型
+ollama run llama2             # 运行模型
 
-# 重启面板
-xfce4-panel -r
-
-# 面板插件管理
-xfce4-panel --preferences
+# 模型存储位置
+/var/lib/ollama/models/       # 模型文件存储目录
 ```
 
-#### 主题和字体
+### GPU 支持配置
+
 ```bash
-# GTK 配置
-~/.config/gtk-3.0/settings.ini
+# 检查 GPU 状态
+nvidia-smi
 
-# 字体配置
-~/.config/fontconfig/fonts.conf
+# 检查 CUDA 版本
+nvcc --version
 
-# 更新字体缓存
-fc-cache -fv
-```
-
-### 远程访问配置
-
-#### XRDP 配置
-```bash
-# 主配置文件
-/etc/xrdp/xrdp.ini
-
-# 会话配置
-/etc/xrdp/sesman.ini
-
-# 服务管理
-sudo service xrdp status
-sudo service xrdp restart
-```
-
-#### SSH 配置
-```bash
-# SSH 配置文件
-/etc/ssh/sshd_config
-
-# 重启 SSH 服务
-sudo service ssh restart
-```
-
----
-
-## 🐛 已知问题和解决方案
-
-### 音频问题
-
-#### 问题: 远程桌面无音频
-**解决方案**:
-```bash
-# 重启 PulseAudio
-pulseaudio --kill
-pulseaudio --start
-
-# 检查 XRDP 音频模块
-pactl list modules | grep xrdp
-
-# 手动加载模块
-pactl load-module module-xrdp-sink
-```
-
-#### 问题: 音频设备未检测
-**解决方案**:
-```bash
-# 检查音频硬件
-aplay -l
-
-# 重新配置 PulseAudio
-rm -rf ~/.config/pulse
-pulseaudio --kill
-pulseaudio --start
-```
-
-### 数据库问题
-
-#### 问题: MySQL 启动失败
-**解决方案**:
-```bash
-# 检查错误日志
-sudo tail -f /var/log/mysql/mysql.err.log
-
-# 修复权限
-sudo chown -R mysql:mysql /SunshineCloud/MySQL-Server
-sudo chmod 755 /SunshineCloud/MySQL-Server
-
-# 重新初始化
-sudo mysql_install_db --user=mysql --datadir=/SunshineCloud/MySQL-Server/data
-```
-
-#### 问题: Redis 内存不足
-**解决方案**:
-```bash
-# 检查内存使用
-redis-cli info memory
-
-# 配置最大内存
-redis-cli config set maxmemory 1gb
-redis-cli config set maxmemory-policy allkeys-lru
-
-# 持久化配置
-echo "maxmemory 1gb" >> /etc/redis/redis.conf
-```
+# 验证 PyTorch GPU 支持
+python -c "import torch; print(torch.cuda.is_available())"
+## 已知问题和解决方案
 
 ### 远程桌面问题
 
-#### 问题: RDP 连接拒绝
+**问题**: RDP 连接失败
 **解决方案**:
 ```bash
-# 检查 XRDP 状态
-sudo service xrdp status
+# 检查 XRDP 服务状态
+sudo systemctl status xrdp
+
+# 重启 XRDP 服务
+sudo systemctl restart xrdp
 
 # 检查端口监听
 netstat -tlnp | grep 3389
-
-# 重启服务
-sudo service xrdp restart
-sudo service dbus restart
 ```
 
-#### 问题: 桌面显示异常
+### 服务管理问题
+
+**问题**: 服务无法启动
 **解决方案**:
 ```bash
-# 重置 XFCE 配置
-mv ~/.config/xfce4 ~/.config/xfce4.bak
-startxfce4
+# 查看所有服务状态
+sudo supervisorctl status
 
-# 修复权限
-sudo chown -R matrix0523:matrix0523 /home/matrix0523
+# 重启特定服务
+sudo supervisorctl restart mysql
+sudo supervisorctl restart redis-server
+sudo supervisorctl restart ollama
+
+# 查看服务日志
+sudo supervisorctl tail -f mysql
 ```
 
----
+### GPU 相关问题
 
-## 📈 性能优化
+**问题**: GPU 不可用或检测失败
+**解决方案**:
+```bash
+# 检查 NVIDIA 驱动
+nvidia-smi
+
+# 检查 CUDA 安装
+nvcc --version
+
+# 验证 PyTorch GPU 支持
+python -c "import torch; print(torch.cuda.is_available())"
+
+# 重新安装 PyTorch GPU 版本
+./Torch-Install-GPU.sh
+```
+
+### AI 模型服务问题
+
+**问题**: Ollama 服务无法启动
+**解决方案**:
+```bash
+# 检查 Ollama 用户和目录权限
+sudo chown -R ollama:ollama /var/lib/ollama
+sudo chmod -R 755 /var/lib/ollama
+
+# 手动启动 Ollama 服务
+sudo -u ollama /usr/local/bin/ollama serve
+
+# 检查 Ollama 服务状态
+sudo supervisorctl status ollama
+```
+
+## 性能优化建议
 
 ### 内存优化
 ```bash
@@ -503,13 +398,62 @@ stop-writes-on-bgsave-error no
 
 <div align="center">
 
-## 🎯 项目状态
+### 容器配置优化
 
-🏷️ **GitHub 发布版本** | 🐳 **Docker 下载量** | ⭐ **GitHub 星标** | 🍴 **GitHub 分支** | 🐛 **问题跟踪**
+```bash
+# 为容器分配足够的资源
+docker run -d \
+  --name sunshine-desktop \
+  --memory=8g \
+  --cpus=4 \
+  --shm-size=2g \
+  -p 3389:3389 \
+  sunshinecloud007/sunshinecloud-universal-desktop:latest
+```
 
-**📅 最后更新**: 2025年9月16日  
-**🏷️ 版本**: v2025.09-universal  
-**📦 镜像大小**: ~4.2GB (压缩后 ~1.8GB)  
-**⚡ 构建时间**: ~45分钟  
+### AI 工作负载优化
 
-</div>
+```bash
+# GPU 加速环境变量
+export TORCH_GPU_SKIP_VERIFICATION=true
+export FORCE_REINSTALL=true
+export CUDA_VERSION=12.1
+
+# 使用 GPU 优化的 PyTorch 安装
+./Torch-Install-GPU.sh
+```
+
+### 存储优化
+
+```bash
+# 使用外部存储卷
+-v /path/to/models:/var/lib/ollama/models \
+-v /path/to/data:/app/data \
+-v /path/to/output:/app/output
+```
+
+## 历史版本
+
+### v2025.09 (2025年9月)
+- 初始发布版本
+- 基础桌面环境和开发工具
+
+### v2025.10 (2025年10月)  
+- 新增 AI/ML 专门桌面环境
+- GPU 支持和 CUDA 集成
+- Ollama 大语言模型服务
+- 多阶段构建优化
+- 自动化测试和部署流程
+
+## 项目状态
+
+最后更新: 2025年10月25日
+当前版本: v2025.10
+镜像大小: 基础镜像 ~3.2GB, AI 专门镜像 ~8-12GB
+构建时间: 基础镜像 ~30分钟, AI 镜像 ~60-90分钟
+
+## 联系和支持
+
+- GitHub Issues: 问题报告和功能请求
+- GitHub Discussions: 社区讨论和交流  
+- Docker Hub: 预构建镜像下载
