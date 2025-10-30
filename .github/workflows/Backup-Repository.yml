@@ -1,0 +1,125 @@
+name: Backup Repository
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    # Run backup every Sunday at 2 AM UTC
+    - cron: '0 2 * * 0'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  backup-repository:
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch full history
+        submodules: 'recursive'
+        token: ${{ secrets.REPO_TOKEN }}
+
+    - name: Get current date and time
+      id: datetime
+      run: |
+        echo "timestamp=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
+        echo "date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+        echo "commit_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+    - name: Create Backup Package
+      run: |
+        # Create backup directory
+        mkdir -p backup
+        
+        # Create a comprehensive backup archive
+        tar --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='*.log' \
+            --exclude='__pycache__' \
+            --exclude='.pytest_cache' \
+            --exclude='backup' \
+            --exclude='*.tmp' \
+            --exclude='.vscode' \
+            --exclude='.idea' \
+            -czf backup/SunshineCloud-Universal-Desktop-${{ steps.datetime.outputs.timestamp }}.tar.gz \
+            .
+        
+        # Create a git bundle as additional backup
+        git bundle create backup/SunshineCloud-Universal-Desktop-${{ steps.datetime.outputs.timestamp }}.bundle --all
+        
+        # List created files
+        ls -la backup/
+        
+        # Calculate checksums
+        cd backup
+        sha256sum *.tar.gz *.bundle > checksums.sha256
+        cat checksums.sha256
+
+    - name: Upload Backup Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: SunshineCloud-Universal-Desktop-backup-${{ steps.datetime.outputs.timestamp }}
+        path: backup/
+        retention-days: 30
+    # Create GitHub Release with backup files
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          backup/SunshineCloud-Universal-Desktop-${{ steps.datetime.outputs.timestamp }}.tar.gz
+          backup/SunshineCloud-Universal-Desktop-${{ steps.datetime.outputs.timestamp }}.bundle
+          backup/checksums.sha256
+        body: |
+          ## 🗄️ SunshineCloud Universal Self-Hosted Repository Backup
+          
+          **备份日期:** ${{ steps.datetime.outputs.date }}
+          **提交 SHA:** ${{ steps.datetime.outputs.commit_sha }}
+          **备份文件:**
+          
+          - 📦 `SunshineCloud-Universal-Desktop-${{ steps.datetime.outputs.timestamp }}.tar.gz` - 完整源代码存档
+          - 🔗 `SunshineCloud-Universal-Desktop-${{ steps.datetime.outputs.timestamp }}.bundle` - Git 仓库包
+          - 🔐 `checksums.sha256` - SHA256 校验和验证文件
+          
+          ### 📋 备份内容
+          - 完整的源代码和配置文件
+          - AI/ML 服务容器 (Stable Diffusion, ComfyUI, Fooocus, Text Generation)
+          - VS Code Dev Container 配置
+          - 开发环境配置文件
+          - GitHub Actions 工作流
+          - 文档和许可证文件
+          - CUDA 安装脚本
+          - 应用程序安装脚本
+          
+          ### 🔍 验证和使用
+          ```bash
+          # 验证文件完整性
+          sha256sum -c checksums.sha256
+          
+          # 解压存档
+          tar -xzf SunshineCloud-Universal-Desktop-${{ steps.datetime.outputs.timestamp }}.tar.gz
+          
+          # 从 bundle 克隆
+          git clone SunshineCloud-Universal-Desktop-${{ steps.datetime.outputs.timestamp }}.bundle restored-repo
+          ```
+          
+          ### 🚀 项目特性
+          - 多语言开发环境支持 (Python, Node.js, Java, Go, Ruby, PHP, .NET)
+          - AI/ML 框架集成 (Stable Diffusion, ComfyUI, Fooocus, Text Generation)
+          - 容器化开发工具 (Docker, VS Code Dev Containers)
+          - 无头服务器环境优化
+          - 自动化服务管理 (Supervisor)
+          
+          ---
+          *GitHub Actions 自动创建的备份*
+        tag_name: backup-${{ steps.datetime.outputs.timestamp }}
+        name: "Repository Backup - ${{ steps.datetime.outputs.date }}"
+        draft: false
+        prerelease: false
+        token: ${{ secrets.REPO_TOKEN }}
+        make_latest: false
